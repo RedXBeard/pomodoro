@@ -34,7 +34,7 @@ class Pomodoro(BoxLayout):
         for i in range(1, 5):
             pos = Vector(0, 70).rotate(self.perrotation * (self.time_period / 5) * i)
             display_time = int(strftime('%M:%S', gmtime((self.time_period / 5) * i)).split(":")[0])
-            label = Label(text="[color=000000]%s[/color]"%display_time,
+            label = Label(text="[color=000000]%s min.[/color]"%display_time,
                           markup=True, pos=pos, size=(10,10),
                           font_name=KIVY_DEFAULT_FONT)
             self.floatlayout.add_widget(label)
