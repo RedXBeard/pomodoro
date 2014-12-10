@@ -1,50 +1,70 @@
 #:kivy 1.8.0
-#:import KIVY_VERSION pomodoro.KIVY_VERSION
+#:import iconic_font_name config.KIVY_ICONIC_FONT
+#:import iconic_font_path config.KIVY_ICONIC_FONT_PATH
+#:import default_font_name config.KIVY_DEFAULT_FONT
+#:import default_font_path config.KIVY_DEFAULT_FONT_PATH
+#:import KIVY_VERSION config.KIVY_VERSION
+#:import color1 config.COLOR1
 
 <Pomodoro>
 	canvas.before:
         Color:
-            rgb: .85,.85,.85
+            rgb: 1,1,1,1
         Rectangle:
         	pos: self.pos
         	size: self.size
 
 	orientation: 'vertical'
-	size_hint: 1.0, 1.0
-	
+
 	start_button: start_button
-	
+    floatlayout: floatlayout
+
 	BoxLayout:
-		
+
 		size_hint: 1.0, None
 		height: 40
 		pos_hint: {'top':1}
-		
+
 		Label:
 			background_color: .9,.9,.9,1
-			text: "[color=000000]%s Seconds[/color]"%root.time_display
+			text: "[color=000000]%s[/color]"%root.time_display
 			text_size: self.width, None
 			markup: True
 			halign: 'left'
+			font_size: 30
+			font_name: default_font_name
 			padding_x: '-5dp' if KIVY_VERSION == '1.8.0' else '5dp'
-		
+
 		Button:
 			id: start_button
 			size_hint: None, 1.0
 			width: 60
-			text: "start"
+			text: "" if self.disabled else ""
+			font_name: iconic_font_name
+			markup: True
+            background_normal: ""
+            background_down: ""
+            background_color: color1
 			on_press: root.start_animation()
-	Image:
-		canvas.before:
-			PushMatrix
-			Rotate:
-				angle: root.rotation
-				axis: 0, 0, 1
-				origin: self.center
 
-		canvas.after:
-			PopMatrix
-			
-		size_hint: 1.0, None
-		height: 200
-		
+    FloatLayout:
+        id: floatlayout
+    	Image:
+    	    source: 'assets/arrow.png'
+    		canvas.before:
+    			PushMatrix
+    			Rotate:
+    				angle: root.rotation
+    				axis: 0, 0, 1
+    				origin: self.center
+
+    		canvas.after:
+    			PopMatrix
+
+        Label:
+            text: '[color=000000]25/0[/color]'
+            markup: True
+            pos: 0, 70
+            size: 10, 10
+            font_name: default_font_name
+
