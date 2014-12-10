@@ -8,7 +8,8 @@ PATH_SEPERATOR = '\\' if os.path.realpath(__file__).find('\\') != -1 else '/'
 PROJECT_PATH = PATH_SEPERATOR.join(os.path.realpath(__file__).\
                                     split(PATH_SEPERATOR)[:-1])
 
-TIME_PERIOD = 1500
+WORK_TIME_PERIOD = 30
+BREAK_TIME_PERIOD = 10
 
 KIVY_FONTS = [{
         "name": "WebAwesome",

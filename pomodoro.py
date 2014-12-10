@@ -1,4 +1,3 @@
-import kivy
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -17,14 +16,17 @@ Config.set('graphics', 'fullscreen', 0)
 Config.set('graphics', 'resizable', 0)
 
 class Pomodoro(BoxLayout):
-    time_period = NumericProperty(TIME_PERIOD)
+    time_period = NumericProperty()
     time_display = StringProperty()
     rotation = NumericProperty(0)
+    start_time = NumericProperty()
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, time_period, *args, **kwargs):
         super(Pomodoro, self).__init__(*args, **kwargs)
+        self.time_period = time_period
         self.time_display = strftime('%M:%S', gmtime(self.time_period))
         self.animation = None
+        self.start_time = int(strftime('%M:%S', gmtime(self.time_period)).split(":")[0])
         self.clock = SoundLoader.load('assets/clock.wav')
         self.alarm = SoundLoader.load('assets/alarm.wav')
         self.perrotation = Vector(1, 1).angle(
@@ -44,28 +46,34 @@ class Pomodoro(BoxLayout):
         self.start_button.disabled = True
 
     def decrease_minutes(self):
-        if self.time_period == 0:
+        if self.time_period < 1:
+            self.rotation = 0
             self.reset_time()
         else:
             self.clock.stop()
             self.clock.play()
+
             self.rotation += self.perrotation
             self.time_period -= 1
             self.time_display = strftime('%M:%S', gmtime(self.time_period))
+
             if self.animation:
                 self.animation.stop(self)
             self.animation = Animation(
-                rotation=self.rotation, d=1500, t='out_quad', s=1)
+                rotation=self.rotation, d=1)
             self.animation.start(self)
+
             Clock.schedule_once(lambda dt: self.decrease_minutes(), 1)
 
     def reset_time(self):
+        if self.animation:
+            self.animation.stop(self)
+        self.rotation = 0
         self.clock.stop()
         self.alarm.play()
-        self.time_period = TIME_PERIOD
+        self.time_period = WORK_TIME_PERIOD
         self.time_display = strftime('%M:%S', gmtime(self.time_period))
         self.start_button.disabled = False
-        self.rotation = 0
 
 
 class PomodoroApp(App):
@@ -78,7 +86,7 @@ class PomodoroApp(App):
         Window.size = (200, 240)
         Window.fullscreen = 0
         Window.resizable = 0
-        return Pomodoro()
+        return Pomodoro(WORK_TIME_PERIOD)
 
 if __name__ == "__main__":
     PomodoroApp().run()
