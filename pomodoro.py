@@ -11,10 +11,10 @@ from kivy.animation import Animation
 from kivy.core.audio import SoundLoader
 
 KIVY_VERSION = kivy.__version__
-
+TIME_PERIOD = 30
 
 class Pomodoro(BoxLayout):
-    time_period = NumericProperty(30)
+    time_period = NumericProperty(TIME_PERIOD)
     time_display = StringProperty()
     rotation = NumericProperty(0)
 
@@ -50,7 +50,7 @@ class Pomodoro(BoxLayout):
     def reset_time(self):
         self.clock.stop()
         self.alarm.play()
-        self.time_period = 1500
+        self.time_period = TIME_PERIOD
         self.time_display = strftime('%M:%S', gmtime(self.time_period))
         self.start_button.disabled = False
         self.rotation = 0
