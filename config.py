@@ -32,4 +32,6 @@ KIVY_DEFAULT_FONT_PATH = filter(lambda x: x['name'] == KIVY_DEFAULT_FONT, KIVY_F
 KIVY_ICONIC_FONT = "WebAwesome"
 KIVY_ICONIC_FONT_PATH = filter(lambda x: x['name'] == KIVY_ICONIC_FONT, KIVY_FONTS)[0]['fn_regular']
 
-COLOR1 = get_color_from_hex('E62E25')#'D40D12')
+COLOR1 = get_color_from_hex('E62E25')
+COLOR_RED = (1,.85,.85,1)
+COLOR_BLUE = (.85,.85,1,1)

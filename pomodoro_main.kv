@@ -5,6 +5,8 @@
 #:import default_font_path config.KIVY_DEFAULT_FONT_PATH
 #:import KIVY_VERSION config.KIVY_VERSION
 #:import color1 config.COLOR1
+#:import color_red config.COLOR_RED
+#:import color_blue config.COLOR_BLUE
 
 <Pomodoro>
 	canvas.before:
@@ -53,11 +55,21 @@
     	    source: 'assets/arrow.png'
     		canvas.before:
     			PushMatrix
+    			Color:
+                    rgb: .95,.95,.95,1
+                Ellipse:
+                    pos: self.pos
+                	size: self.size
+    			Color:
+                    rgb: color_red
+                Ellipse:
+                    pos: self.pos
+                	size: self.size
+                	angle_end: root.rotation * -1
     			Rotate:
     				angle: root.rotation
     				axis: 0, 0, 1
     				origin: self.center
-
     		canvas.after:
     			PopMatrix
 
