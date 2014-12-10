@@ -1,0 +1,50 @@
+#:kivy 1.8.0
+#:import KIVY_VERSION pomodoro.KIVY_VERSION
+
+<Pomodoro>
+	canvas.before:
+        Color:
+            rgb: .85,.85,.85
+        Rectangle:
+        	pos: self.pos
+        	size: self.size
+
+	orientation: 'vertical'
+	size_hint: 1.0, 1.0
+	
+	start_button: start_button
+	
+	BoxLayout:
+		
+		size_hint: 1.0, None
+		height: 40
+		pos_hint: {'top':1}
+		
+		Label:
+			background_color: .9,.9,.9,1
+			text: "[color=000000]%s Seconds[/color]"%root.time_display
+			text_size: self.width, None
+			markup: True
+			halign: 'left'
+			padding_x: '-5dp' if KIVY_VERSION == '1.8.0' else '5dp'
+		
+		Button:
+			id: start_button
+			size_hint: None, 1.0
+			width: 60
+			text: "start"
+			on_press: root.start_animation()
+	Image:
+		canvas.before:
+			PushMatrix
+			Rotate:
+				angle: root.rotation
+				axis: 0, 0, 1
+				origin: self.center
+
+		canvas.after:
+			PopMatrix
+			
+		size_hint: 1.0, None
+		height: 200
+		
