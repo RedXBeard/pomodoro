@@ -4,7 +4,7 @@ from kivy.uix.label import Label
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.vector import Vector
-from kivy.properties import NumericProperty, StringProperty
+from kivy.properties import NumericProperty, StringProperty, ObjectProperty
 from kivy.clock import Clock
 from kivy.animation import Animation
 from kivy.core.audio import SoundLoader
@@ -36,8 +36,8 @@ class Pomodoro(BoxLayout):
 
     def start_animation(self):
         """
-        starts animation for rotation, if state is on 'work' 
-        then start date should be taken to log pomodoro. 
+        starts animation for rotation, if state is on 'work'
+        then start date should be taken to log pomodoro.
         other then stop date must be reset in each starting animation action.
         """
         if self.state == "work":
@@ -48,8 +48,8 @@ class Pomodoro(BoxLayout):
 
     def decrease_minutes(self):
         """
-        until the rotation count reaches the end 
-        minutes and rotation should be continue. 
+        until the rotation count reaches the end
+        minutes and rotation should be continue.
         At the end pomodoro stop date must be taken too
         sounds should also be handled.
         """
@@ -91,8 +91,8 @@ class Pomodoro(BoxLayout):
 
     def set_to_workstate(self):
         """
-        the state of pomodoro taken to 'work' time periods and 
-        required settings handled. for per work pomodoro 
+        the state of pomodoro taken to 'work' time periods and
+        required settings handled. for per work pomodoro
         counter counts this state until break state triggered
         """
         self.state = "work"
@@ -105,8 +105,8 @@ class Pomodoro(BoxLayout):
 
     def set_to_breakstate(self):
         """
-        Break pomodoro action handled, the time calculated by 
-        the work state counter then it resets 
+        Break pomodoro action handled, the time calculated by
+        the work state counter then it resets
         """
         self.state = "break"
         self.time_period = BREAK_TIME_PERIOD * self.sprint_count
@@ -118,10 +118,10 @@ class Pomodoro(BoxLayout):
 
     def reset_time(self):
         """
-        triggered when the timer reaches the end, animation, clock sound, 
-        disability of button switched to other state of each. 
-        pomodoro state changes according to the current one. 
-        If the current state is 'break' then 'work' state trigger triggered 
+        triggered when the timer reaches the end, animation, clock sound,
+        disability of button switched to other state of each.
+        pomodoro state changes according to the current one.
+        If the current state is 'break' then 'work' state trigger triggered
         """
         if self.animation:
             self.animation.stop(self)
@@ -137,7 +137,7 @@ class Pomodoro(BoxLayout):
 
     def set_volume(self, state):
         """
-        Volume operation handled except alarm sound. 
+        Volume operation handled except alarm sound.
         """
         on_off = 0 if state == "down" else 1
         if self.clock:
@@ -145,8 +145,8 @@ class Pomodoro(BoxLayout):
 
     def keep_info(self, text):
         """
-        after each pomodoro in 'work' state an information is taken 
-        from user and to log that with other necessary informations 
+        after each pomodoro in 'work' state an information is taken
+        from user and to log that with other necessary informations
         collection is written in a file.
         """
         if text:
@@ -165,7 +165,6 @@ class Pomodoro(BoxLayout):
             DB.store_sync()
             self.switch_screen('action')
 
-
 class PomodoroApp(App):
 
     def __init__(self, *args, **kwargs):
@@ -182,6 +181,8 @@ if __name__ == "__main__":
     Window sizes and wanted skills are set, then app calls
     """
     Window.size = (200, 240)
+    Window.borderless = False
+    Window.clearcolor = (1,1,1,1)
     Config.set('graphics', 'fullscreen', 0)
     Config.set('graphics', 'resizable', 0)
     PomodoroApp().run()

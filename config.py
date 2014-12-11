@@ -37,7 +37,7 @@ if not os.path.exists(directory):
     os.makedirs(directory)
 
 
-WORK_TIME_PERIOD = 5
+WORK_TIME_PERIOD = 1500
 BREAK_TIME_PERIOD = 300
 
 KIVY_FONTS = [{
