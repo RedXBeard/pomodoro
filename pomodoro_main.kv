@@ -8,51 +8,102 @@
 #:import color_red config.COLOR_RED
 #:import color_blue config.COLOR_BLUE
 
+<Button>
+	size_hint: None, 1.0
+	width: 60
+	markup: True
+	background_normal: ""
+	background_down: ""
+	background_color: color1
+	font_size: 14
+	
 <Pomodoro>
 	canvas.before:
         Color:
-            rgb: 1,1,1,1
+            rgb: 1,1,1
         Rectangle:
         	pos: self.pos
         	size: self.size
 
 	orientation: 'vertical'
-
+	
+	sm: sm
 	start_button: start_button
     floatlayout: floatlayout
-
+	message: message
+	
 	BoxLayout:
-
 		size_hint: 1.0, None
 		height: 40
 		pos_hint: {'top':1}
-
-		Label:
-			background_color: .9,.9,.9,1
-			text: "[color=000000]%s[/color]"%root.time_display
-			text_size: self.width, None
-			markup: True
-			halign: 'left'
-			font_size: 30
-			font_name: default_font_name
-			padding_x: '-5dp' if KIVY_VERSION == '1.8.0' else '5dp'
-
-		Button:
-			id: start_button
-			size_hint: None, 1.0
-			width: 60
-			text: "" if self.disabled else ""
-			font_name: iconic_font_name
-			markup: True
-            background_normal: ""
-            background_down: ""
-            background_color: color1
-			on_press: root.start_animation()
+		
+		ScreenManager:
+			id: sm
+			start: start
+			info: info
+			Screen:	
+				id: start
+				name: 'start'
+				
+				ToggleButton:
+					id: sound_button
+					pos_hint: {'left':1}
+					size_hint: None, 1.0
+					width: 60
+					text: "  " if self.state == "down" else ""
+					font_name: iconic_font_name
+					markup: True
+		            background_normal: ""
+		            background_down: ""
+		            background_color: color1
+		            on_press: root.set_volume(self.state)
+				Button:
+					id: start_button
+					pos_hint: {'right':1}
+					text: "" if self.disabled else ""
+					font_name: iconic_font_name
+					on_press: root.start_animation()
+			Screen:
+				id: info
+				name: 'info'
+				message: message
+				TextInput:
+					id: message
+					size_hint_y: None
+					focus: True
+					hint_text: 'Enter your sprint info.'
+					height: 40
+					font_size: 12
+					background_color: 1,1,1,1
+					border: 5,5,5,5
+				Button:
+					id: save_button
+					pos_hint: {'right':1}
+					text: 'Save'
+					font_name: default_font_name
+					on_press: root.keep_info(self.parent.message.text)
+			Screen:
+				id: action
+				name: 'action'
+				
+				Button:
+					id: break_button
+					pos_hint: {'left':1}
+					text: 'Break!'
+					font_name: default_font_name
+					on_press: root.set_to_breakstate();root.start_animation()
+				
+				Button:
+					id: continue_button
+					pos_hint: {'right':1}
+					text: 'Go on..'
+					font_name: default_font_name
+					on_press: root.set_to_workstate();root.start_animation()
 
     FloatLayout:
         id: floatlayout
     	Image:
-    	    source: 'assets/arrow.png'
+    	    source: 'assets/blank.png'
     		canvas.before:
     			PushMatrix
 
@@ -76,10 +127,14 @@
     		canvas.after:
     			PopMatrix
 
-        Label:
-            text: '[color=000000]%s/0 min.[/color]'%root.start_time
-            markup: True
-            pos: 0, 70
-            size: 10, 10
-            font_name: default_font_name
-
+	
+		Label:
+			background_color: .9,.9,.9,1
+			text: "[color=404040]%s[/color]"%root.time_display
+			text_size: self.width, None
+			markup: True
+			halign: 'left'
+			font_size: 30
+			font_name: default_font_name
+			padding_x: '-5dp' if KIVY_VERSION == '1.8.0' else '5dp'
+			pos: 60, 0
