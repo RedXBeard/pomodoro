@@ -181,8 +181,9 @@ if __name__ == "__main__":
     Window sizes and wanted skills are set, then app calls
     """
     Window.size = (200, 240)
-    Window.borderless = False
     Window.clearcolor = (1,1,1,1)
+    Config.set('kivy', 'desktop', 1)
     Config.set('graphics', 'fullscreen', 0)
     Config.set('graphics', 'resizable', 0)
+
     PomodoroApp().run()
