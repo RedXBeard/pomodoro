@@ -6,7 +6,7 @@ This GUI interfaced pomodoro does the same thing with the pomodoro timer, and al
 
 MAC Installation
 ----------------
-There will be <code>.dmg</code> link soon.
+To download <code>.dmg</code>, please; https://app.box.com/s/zlsgpn9qvivkimr3b75a.
 
 Linux Installation
 ------------------
