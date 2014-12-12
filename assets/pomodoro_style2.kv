@@ -1,0 +1,129 @@
+#:kivy 1.8.0
+#:import iconic_font_name config.KIVY_ICONIC_FONT
+#:import iconic_font_path config.KIVY_ICONIC_FONT_PATH
+#:import default_font_name config.KIVY_DEFAULT_FONT
+#:import default_font_path config.KIVY_DEFAULT_FONT_PATH
+#:import default_book_font_name config.KIVY_DEFAULT_BOOK_FONT
+#:import default_book_font_path config.KIVY_DEFAULT_BOOK_FONT_PATH
+#:import default_extralight_font_name config.KIVY_DEFAULT_EXTRALIGHT_FONT
+#:import default_extralight_font_path config.KIVY_DEFAULT_EXTRALIGHT_FONT_PATH
+#:import KIVY_VERSION config.KIVY_VERSION
+
+<Button>
+	background_normal: ""
+	background_down: ""
+	background_disabled_down: ""
+	background_disabled_normal: ""
+	has_hover: True
+	inactive: True
+	
+<Pomodoro>
+	orientation: 'vertical'
+	
+	minimize_but: minimize_but
+	settings_but: settings_but
+	play_but: play_but
+	pause_but: pause_but
+	stop_but: stop_but
+	
+	BoxLayout:
+		size_hint: 1.0, None
+		height: 35
+		pos_hint: {'top': 1}
+		Button:
+			id: minimize_but
+            size_hint: None, None
+            width: 30
+            height: 30
+            has_hover: False
+            name: "minimize"
+            ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
+			Image:
+				source: "assets/icons/minify.png"
+				pos: self.parent.pos
+		TextInput:
+			id: message
+			size_hint_y: None
+			hint_text: 'Enter your sprint info.'
+			height: 30
+			font_size: 12
+			font_name: default_book_font_name
+			background_color: 1,1,1,1
+			border: 5,5,5,5
+		Button:
+			id: settings_but
+            size_hint: None, None
+            width: 30
+            height: 30
+            name: "settings"
+            ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
+			Image:
+				inactive: "assets/icons/settings_hover.png"
+				source: "assets/icons/settings.png" if self.parent.inactive else "assets/icons/settings_hover.png"
+				pos: self.parent.pos
+	
+	Label:
+		size_hint: 1.0, None
+		height: 75            	
+		text: "[color=455A64]%s[/color]"%root.time_display
+		markup: True
+		font_name: default_extralight_font_name
+		font_size: 72
+	
+	BoxLayout:
+		size_hint: 1.0, None
+		height: 30
+		
+		Label:
+			size_hint: None, 1.0
+			width: 70
+			
+		Button: 
+			id: play_but
+			size_hint: None, None
+            width: 25
+            height: 25
+            name: "play"
+            ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
+            on_press: root.start_animation()
+			Image:
+				inactive: "assets/icons/play_hover.png"
+				source: "assets/icons/play_hover.png" if (not self.parent.inactive or self.parent.disabled) and root.state in ('paused', 'work') else "assets/icons/play.png"
+				pos: self.parent.pos
+		
+		Label:
+			size_hint: None, 1.0
+			width: 38
+			
+		Button: 
+			id: pause_but
+			size_hint: None, None
+            width: 25
+            height: 25
+            name: "pause"
+            ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
+            on_press: root.pause_animation()
+			Image:
+				inactive: "assets/icons/pause_hover.png"
+				source: "assets/icons/pause_hover.png" if (not self.parent.inactive or self.parent.disabled) and root.state in ('paused','work') else "assets/icons/pause.png"
+				pos: self.parent.pos
+		
+		Label:
+			size_hint: None, 1.0
+			width: 40
+		
+		Button:
+			id: stop_but
+			size_hint: None, None
+            width: 25
+            height: 25
+            name: "stop"
+            ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
+            on_press: root.stop_animation()
+			Image:
+				inactive: "assets/icons/stop_hover.png"
+				source: "assets/icons/stop.png" if self.parent.inactive else "assets/icons/stop_hover.png"
+				pos: self.parent.pos
+	Label:
+		size_hint: 1.0, None
+		height: 10 

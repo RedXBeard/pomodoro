@@ -4,7 +4,7 @@ from kivy.uix.label import Label
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.vector import Vector
-from kivy.properties import NumericProperty, StringProperty, ObjectProperty
+from kivy.properties import NumericProperty, StringProperty, ListProperty, BooleanProperty
 from kivy.clock import Clock
 from kivy.animation import Animation
 from kivy.core.audio import SoundLoader
@@ -13,6 +13,19 @@ from kivy.uix.screenmanager import SlideTransition
 from time import strftime, gmtime
 from datetime import datetime
 from config import *
+
+
+def get_buttons(obj, buttons=[]):
+    """
+    Buttons which are capable of hover action will 
+    taken from the root object. Capability is kept 
+    with buttons extra attribute called 'has_hover'
+    """
+    for ch in obj.children:
+        if hasattr(ch, 'has_hover'):
+            buttons.append(ch)
+        get_buttons(ch, buttons)
+    return buttons
 
 
 class Pomodoro(BoxLayout):
@@ -25,14 +38,18 @@ class Pomodoro(BoxLayout):
     state = StringProperty()
     start = StringProperty()
     stop = StringProperty()
+    buttons = ListProperty()
+    count_start = BooleanProperty(False)
 
     def __init__(self, *args, **kwargs):
         super(Pomodoro, self).__init__(*args, **kwargs)
+        self.buttons = get_buttons(self, [])
         self.set_to_workstate()
         self.animation = None
         self.clock = SoundLoader.load('assets/clock.wav')
         self.alarm = SoundLoader.load('assets/alarm.wav')
-        self.sm.current = 'start'
+        if ACTIVE_STYLE == "style1":
+            self.sm.current = 'start'
 
     def start_animation(self):
         """
@@ -41,10 +58,20 @@ class Pomodoro(BoxLayout):
         other then stop date must be reset in each starting animation action.
         """
         if self.state == "work":
+            self.count_start = True
             self.start = str(datetime.now()).rsplit('.', 1)[0]
+            
+        elif self.state == "paused" and ACTIVE_STYLE == "style2":
+            self.pause_but.disabled = False
+            self.state = "work"
+            self.count_start = True
+            
         self.stop = ""
         Clock.schedule_once(lambda dt: self.decrease_minutes(), 1)
-        self.start_button.disabled = True
+        if ACTIVE_STYLE == "style1":
+            self.start_button.disabled = True
+        if ACTIVE_STYLE == "style2":
+            self.play_but.disabled = True
 
     def decrease_minutes(self):
         """
@@ -53,7 +80,9 @@ class Pomodoro(BoxLayout):
         At the end pomodoro stop date must be taken too
         sounds should also be handled.
         """
-        if self.time_period < 1:
+        if not self.count_start:
+            pass
+        elif self.time_period < 1:
             self.rotation = 0
             self.reset_time()
         else:
@@ -65,16 +94,40 @@ class Pomodoro(BoxLayout):
             self.time_display = strftime('%M:%S', gmtime(self.time_period))
             self.time_minute, self.time_second = self.time_display.split(':')
 
-            if self.animation:
-                self.animation.stop(self)
-            self.animation = Animation(rotation=self.rotation, d=1)
-            self.animation.start(self)
+            if ACTIVE_STYLE == "style1":
+                if self.animation:
+                    self.animation.stop(self)
+                self.animation = Animation(rotation=self.rotation, d=1)
+                self.animation.start(self)
 
             if self.state == "work" and self.time_period < 1:
                 self.stop = str(datetime.now()).rsplit('.', 1)[0]
 
             Clock.schedule_once(lambda dt: self.decrease_minutes(), 1)
 
+    def pause_animation(self):
+        self.count_start = False
+        self.clock.stop()
+        self.alarm.stop()
+        self.state = 'paused'
+        buttons = [self.play_but,
+                   self.stop_but,
+                   self.pause_but]
+        for but in buttons:
+            but.disabled = False
+        self.pause_but.disabled = True
+    
+    def stop_animation(self):
+        self.count_start = False
+        self.clock.stop()
+        self.alarm.stop()
+        self.set_to_workstate()
+        buttons = [self.play_but,
+                   self.stop_but,
+                   self.pause_but]
+        for but in buttons:
+            but.disabled = False
+            
     def switch_screen(self, screen):
         """
         action screens rotation handling
@@ -101,7 +154,8 @@ class Pomodoro(BoxLayout):
         self.time_minute, self.time_second = self.time_display.split(':')
         self.sprint_count += 1
         self.set_clock()
-        self.switch_screen('start')
+        if ACTIVE_STYLE == "style1":
+            self.switch_screen('start')
 
     def set_to_breakstate(self):
         """
@@ -114,7 +168,12 @@ class Pomodoro(BoxLayout):
         self.time_display = strftime('%M:%S', gmtime(self.time_period))
         self.time_minute, self.time_second = self.time_display.split(':')
         self.set_clock()
-        self.switch_screen('start')
+        if ACTIVE_STYLE == "style1":
+            self.switch_screen('start')
+
+    def change_disablity(self, button=None):
+        if button:
+            button.disabled = not disabled
 
     def reset_time(self):
         """
@@ -128,12 +187,26 @@ class Pomodoro(BoxLayout):
         self.rotation = 0
         self.clock.stop()
         self.alarm.play()
-        self.start_button.disabled = False
-        if self.state == "break":
-            self.switch_screen('start')
-            self.set_to_workstate()
-        else:
-            self.switch_screen('info')
+        if ACTIVE_STYLE == "style1":
+            self.start_button.disabled = False
+        elif ACTIVE_STYLE == "style2":
+            buttons = [self.play_but,
+                       self.stop_but,
+                       self.pause_but]
+            for but in buttons:
+                but.disabled = False
+            if self.state == "work":
+                self.state = "break"
+                self.set_to_breakstate()
+                self.start_animation()
+            elif self.state == "break":
+                self.set_to_workstate()
+        if ACTIVE_STYLE == "style1":
+            if self.state == "break":            
+                self.switch_screen('start')
+                self.set_to_workstate()
+            else:
+                self.switch_screen('info')
 
     def set_volume(self, state):
         """
@@ -163,25 +236,50 @@ class Pomodoro(BoxLayout):
             existing_data.append(data)
             DB.store_put(current_day, existing_data)
             DB.store_sync()
-            self.switch_screen('action')
+            if ACTIVE_STYLE == "style1":
+                self.switch_screen('action')
+
+    def on_mouse_pos(self, *args):
+        """
+        hover action handling, for capable buttons.
+        """
+        mouse_position = args[1]
+        buttons = filter(lambda x: x.pos[0] <= mouse_position[0] <= x.ranged[0] and
+                         x.pos[1] <= mouse_position[1] <= x.ranged[1],
+                         self.buttons)
+        button = None
+        if buttons:
+            button = buttons[0]
+        for but in self.buttons:
+            if but != button:
+                but.inactive = True
+            else:
+                but.inactive = False
+
 
 class PomodoroApp(App):
 
     def __init__(self, *args, **kwargs):
         super(PomodoroApp, self).__init__(*args, **kwargs)
-        Builder.load_file('pomodoro_main.kv')
+        styles = {"style1": STYLE1, "style2": STYLE2}
+        Builder.load_file(styles[ACTIVE_STYLE])
         self.icon = ICON_PATH
         self.title = "Pomodoro"
 
     def build(self):
-        return Pomodoro()
+        layout = Pomodoro()
+        if ACTIVE_STYLE == "style2":
+            Window.bind(mouse_pos=layout.on_mouse_pos)
+        return layout
 
 if __name__ == "__main__":
     """
     Window sizes and wanted skills are set, then app calls
     """
-    Window.size = (200, 240)
-    Window.clearcolor = (1,1,1,1)
+    styles = {"style1": WINDOW_SIZE_1, "style2": WINDOW_SIZE_2}
+    Window.size = styles[ACTIVE_STYLE]
+    Window.clearcolor = (1, 1, 1, 1)
+    Window.borderless = False
     Config.set('kivy', 'desktop', 1)
     Config.set('graphics', 'fullscreen', 0)
     Config.set('graphics', 'resizable', 0)

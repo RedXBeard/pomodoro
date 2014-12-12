@@ -23,6 +23,14 @@ PROJECT_PATH = PATH_SEPERATOR.join(os.path.realpath(__file__).
 
 ICON_PATH = os.path.join(PROJECT_PATH, 'assets/tomato.ico')
 
+WINDOW_SIZE_1 = (200, 240)
+WINDOW_SIZE_2 = (300, 150)
+
+STYLE1 = "assets/pomodoro_style1.kv"
+STYLE2 = "assets/pomodoro_style2.kv"
+
+ACTIVE_STYLE = "style2"
+
 if PATH_SEPERATOR == '/':
     cmd = "echo $HOME"
 else:
@@ -37,17 +45,25 @@ if not os.path.exists(directory):
     os.makedirs(directory)
 
 
-WORK_TIME_PERIOD = 1500
-BREAK_TIME_PERIOD = 300
+WORK_TIME_PERIOD = 5
+BREAK_TIME_PERIOD = 10
 
 KIVY_FONTS = [{
     "name": "WebAwesome",
     "fn_regular": "%(pp)s%(ps)sassets%(ps)sfontawesome-webfont.ttf" % {'pp': PROJECT_PATH,
                                                                        'ps': PATH_SEPERATOR},
 }, {
-    "name": "FiraSans",
+    "name": "FiraSansRegular",
     "fn_regular": "%(pp)s%(ps)sassets%(ps)sFiraSans-Regular.ttf" % {'pp': PROJECT_PATH,
                                                                     'ps': PATH_SEPERATOR},
+}, {
+    "name": "FiraSansBook",
+    "fn_regular": "%(pp)s%(ps)sassets%(ps)sFiraSans-Book.ttf" % {'pp': PROJECT_PATH,
+                                                                 'ps': PATH_SEPERATOR},
+}, {
+    "name": "FiraSansExtraLight",
+    "fn_regular": "%(pp)s%(ps)sassets%(ps)sFiraSans-ExtraLight.ttf" % {'pp': PROJECT_PATH,
+                                                                       'ps': PATH_SEPERATOR},
 }]
 
 
@@ -56,8 +72,16 @@ for font in KIVY_FONTS:
 
 KIVY_VERSION = kivy.__version__
 
-KIVY_DEFAULT_FONT = "FiraSans"
+KIVY_DEFAULT_FONT = "FiraSansRegular"
 KIVY_DEFAULT_FONT_PATH = filter(
+    lambda x: x['name'] == KIVY_DEFAULT_FONT, KIVY_FONTS)[0]['fn_regular']
+
+KIVY_DEFAULT_BOOK_FONT = "FiraSansBook"
+KIVY_DEFAULT_BOOK_FONT_PATH = filter(
+    lambda x: x['name'] == KIVY_DEFAULT_FONT, KIVY_FONTS)[0]['fn_regular']
+
+KIVY_DEFAULT_EXTRALIGHT_FONT = "FiraSansExtraLight"
+KIVY_DEFAULT_EXTRALIGHT_FONT_PATH = filter(
     lambda x: x['name'] == KIVY_DEFAULT_FONT, KIVY_FONTS)[0]['fn_regular']
 
 KIVY_ICONIC_FONT = "WebAwesome"
