@@ -16,35 +16,34 @@
 	background_down: ""
 	background_color: color1
 	font_size: 14
-	
-<Pomodoro>
-	canvas.before:
-        Color:
-            rgb: 1,1,1
-        Rectangle:
-        	pos: self.pos
-        	size: self.size
+	border: 0,0,0,0
 
+<Label>
+	markup: True
+	font_name: default_font_name
+	padding_x: '-5dp' if KIVY_VERSION == '1.8.0' else '5dp'
+
+<Pomodoro>
 	orientation: 'vertical'
-	
+
 	sm: sm
 	start_button: start_button
     floatlayout: floatlayout
 	message: message
-	
+
 	BoxLayout:
 		size_hint: 1.0, None
 		height: 40
 		pos_hint: {'top':1}
-		
+
 		ScreenManager:
 			id: sm
 			start: start
 			info: info
-			Screen:	
+			Screen:
 				id: start
 				name: 'start'
-				
+
 				ToggleButton:
 					id: sound_button
 					pos_hint: {'left':1}
@@ -85,14 +84,14 @@
 			Screen:
 				id: action
 				name: 'action'
-				
+
 				Button:
 					id: break_button
 					pos_hint: {'left':1}
 					text: 'Break!'
 					font_name: default_font_name
 					on_press: root.set_to_breakstate();root.start_animation()
-				
+
 				Button:
 					id: continue_button
 					pos_hint: {'right':1}
@@ -103,7 +102,7 @@
     FloatLayout:
         id: floatlayout
     	Image:
-    	    source: 'assets/blank.png'
+    		source: 'assets/blank.png'
     		canvas.before:
     			PushMatrix
 
@@ -118,7 +117,7 @@
                 Ellipse:
                     pos: self.pos
                 	size: self.size
-                	angle_end: root.rotation * -1 if root.rotation else 0
+                	angle_end: root.rotation * -1
 
     			Rotate:
     				angle: root.rotation
@@ -127,14 +126,24 @@
     		canvas.after:
     			PopMatrix
 
-	
+    	Image
+    		canvas.after:
+    			Color:
+                    rgba: .95,.95,.95,.5
+                Ellipse:
+                    pos: self.pos
+                	size: self.size
+                	angle_end: (360 + root.rotation) * (-1 if not root.stop else 0)
+
+    	    source: 'assets/tomato.png'
+    	    pos: 2.5, 0
+
 		Label:
-			background_color: .9,.9,.9,1
-			text: "[color=404040]%s[/color]"%root.time_display
-			text_size: self.width, None
-			markup: True
-			halign: 'left'
-			font_size: 30
-			font_name: default_font_name
-			padding_x: '-5dp' if KIVY_VERSION == '1.8.0' else '5dp'
-			pos: 60, 0
+			text: "[color=404040]%s[/color]"%root.time_minute
+			font_size: 35
+			pos: 0, 50
+
+		Label:
+			text: "[color=404040]%s[/color]"%root.time_second
+			font_size: 20
+			pos: 0, -50

@@ -5,6 +5,7 @@ from kivy.core.text import LabelBase
 from kivy.utils import get_color_from_hex
 from kivy.storage.jsonstore import JsonStore
 
+
 def run_syscall(cmd):
     """
     run_syscall; handle sys calls this function used as shortcut.
@@ -20,6 +21,8 @@ PATH_SEPERATOR = '\\' if os.path.realpath(__file__).find('\\') != -1 else '/'
 PROJECT_PATH = PATH_SEPERATOR.join(os.path.realpath(__file__).
                                    split(PATH_SEPERATOR)[:-1])
 
+ICON_PATH = os.path.join(PROJECT_PATH, 'assets/tomato.ico')
+
 if PATH_SEPERATOR == '/':
     cmd = "echo $HOME"
 else:
@@ -32,6 +35,7 @@ DB = JsonStore(DATAFILE)
 directory = os.path.dirname(DATAFILE)
 if not os.path.exists(directory):
     os.makedirs(directory)
+
 
 WORK_TIME_PERIOD = 1500
 BREAK_TIME_PERIOD = 300
