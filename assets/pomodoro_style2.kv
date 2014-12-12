@@ -47,9 +47,14 @@
 			hint_text: 'Enter your sprint info.'
 			height: 30
 			font_size: 12
+			multiline: False
 			font_name: default_book_font_name
 			background_color: 1,1,1,1
 			border: 5,5,5,5
+			background_disabled_active: ""
+			background_disabled_normal: ""
+			background_normal: ""
+			background_active: ""
 		Button:
 			id: settings_but
             size_hint: None, None
@@ -81,8 +86,8 @@
 		Button: 
 			id: play_but
 			size_hint: None, None
-            width: 25
-            height: 25
+            width: 26
+            height: 26
             name: "play"
             ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
             on_press: root.start_animation()
@@ -98,8 +103,8 @@
 		Button: 
 			id: pause_but
 			size_hint: None, None
-            width: 25
-            height: 25
+            width: 26
+            height: 26
             name: "pause"
             ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
             on_press: root.pause_animation()
@@ -115,8 +120,8 @@
 		Button:
 			id: stop_but
 			size_hint: None, None
-            width: 25
-            height: 25
+            width: 26
+            height: 26
             name: "stop"
             ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
             on_press: root.stop_animation()
