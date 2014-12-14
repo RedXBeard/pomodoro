@@ -9,6 +9,7 @@
 #:import default_extralight_font_name config.KIVY_DEFAULT_EXTRALIGHT_FONT
 #:import default_extralight_font_path config.KIVY_DEFAULT_EXTRALIGHT_FONT_PATH
 #:import KIVY_VERSION config.KIVY_VERSION
+#:import COLOR_GREEN config.COLOR_GREEN
 
 <Button>
 	background_normal: ""
@@ -168,7 +169,7 @@
                 BoxLayout:
                     canvas.before:
                         Color:
-                            rgba: 1,1,1,1
+                            rgba: COLOR_GREEN
                         Rectangle:
                             size: 160, 3 #self.size # w - h
                             pos: self.pos[0], self.pos[1]+10# x - y
@@ -182,14 +183,21 @@
                     pos: 10, 80
 
                     MyScatterLayout:
+
                         id: scatter
                         size_hint: None, None
                         size: 20, 20
                         do_rotation: False
                         do_translation_y: False
+                        do_scale: False
                         Image:
+                            canvas.before:
+                                Color:
+                                    rgba: 1, 1, 1, 0
+                                Ellipse:
+                                    pos: self.pos
+                                    size: self.size
                             source: "assets/icons/volume_handle.png"
-                    Label:
 
 
 

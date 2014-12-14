@@ -90,4 +90,4 @@ KIVY_ICONIC_FONT_PATH = filter(
 
 COLOR1 = get_color_from_hex('E62E25')
 COLOR_RED = (1, .85, .85, 1)
-COLOR_BLUE = (.85, .85, 1, 1)
+COLOR_GREEN = get_color_from_hex('52F041')

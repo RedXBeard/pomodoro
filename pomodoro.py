@@ -35,7 +35,7 @@ class MyScatterLayout(ScatterLayout):
     grab_posx = NumericProperty()
 
     def on_touch_move(self, touch):
-        if 10 <= self.grab_posx + (touch.pos[0] - self.pre_posx) <= 150:
+        if 0 <= self.grab_posx + (touch.pos[0] - self.pre_posx) <= 160:
             super(MyScatterLayout, self).on_touch_move(touch)
 
     def on_touch_down(self, touch):
