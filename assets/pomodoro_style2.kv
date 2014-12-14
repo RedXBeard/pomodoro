@@ -167,7 +167,7 @@
         				source: "assets/icons/volume_title.png"
 
                 BoxLayout:
-                    canvas.before:
+                    canvas.after:
                         Color:
                             rgba: COLOR_GREEN
                         Rectangle:
@@ -183,7 +183,6 @@
                     pos: 10, 80
 
                     MyScatterLayout:
-
                         id: scatter
                         size_hint: None, None
                         size: 20, 20
@@ -198,6 +197,6 @@
                                     pos: self.pos
                                     size: self.size
                             source: "assets/icons/volume_handle.png"
-
+                            pos: self.parent.pos[0]-10, self.parent.pos[1]
 
 
