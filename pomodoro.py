@@ -31,13 +31,17 @@ def get_buttons(obj, buttons=[]):
 class MyScatterLayout(ScatterLayout):
     rstop = BooleanProperty(False)
     lstop = BooleanProperty(False)
+    pre_posx = NumericProperty()
+    grab_posx = NumericProperty()
 
     def on_touch_move(self, touch):
-        super(MyScatterLayout, self).on_touch_move(touch)
+        if 10 <= self.grab_posx + (touch.pos[0] - self.pre_posx) <= 150:
+            super(MyScatterLayout, self).on_touch_move(touch)
 
-        # 10 < x < 150
-        # touch position is not acceptable
-        print self.parent.pos, self.pos, touch.pos[0]
+    def on_touch_down(self, touch):
+        super(MyScatterLayout, self).on_touch_down(touch)
+        self.pre_posx = touch.pos[0]
+        self.grab_posx = self.pos[0]
 
 class Pomodoro(BoxLayout):
     time_period = NumericProperty()

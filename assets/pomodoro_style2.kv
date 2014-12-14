@@ -170,9 +170,11 @@
                         Color:
                             rgba: 1,1,1,1
                         Rectangle:
-                            size: self.size
-                            pos: self.pos
+                            size: 160, 3 #self.size # w - h
+                            pos: self.pos[0], self.pos[1]+10# x - y
                 	orientation: 'vertical'
+
+                    scatter: scatter
 
                     size_hint: None, None
                     height: 20
@@ -180,6 +182,7 @@
                     pos: 10, 80
 
                     MyScatterLayout:
+                        id: scatter
                         size_hint: None, None
                         size: 20, 20
                         do_rotation: False
