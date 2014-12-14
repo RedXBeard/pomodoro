@@ -1,5 +1,6 @@
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.scatterlayout import ScatterLayout
 from kivy.uix.label import Label
 from kivy.lang import Builder
 from kivy.core.window import Window
@@ -11,14 +12,14 @@ from kivy.core.audio import SoundLoader
 from kivy.config import Config
 from kivy.uix.screenmanager import SlideTransition
 from time import strftime, gmtime
+from kivy.uix.scatter import Scatter
 from datetime import datetime
 from config import *
 
-
 def get_buttons(obj, buttons=[]):
     """
-    Buttons which are capable of hover action will 
-    taken from the root object. Capability is kept 
+    Buttons which are capable of hover action will
+    taken from the root object. Capability is kept
     with buttons extra attribute called 'has_hover'
     """
     for ch in obj.children:
@@ -27,6 +28,16 @@ def get_buttons(obj, buttons=[]):
         get_buttons(ch, buttons)
     return buttons
 
+class MyScatterLayout(ScatterLayout):
+    rstop = BooleanProperty(False)
+    lstop = BooleanProperty(False)
+
+    def on_touch_move(self, touch):
+        super(MyScatterLayout, self).on_touch_move(touch)
+
+        # 10 < x < 150
+        # touch position is not acceptable
+        print self.parent.pos, self.pos, touch.pos[0]
 
 class Pomodoro(BoxLayout):
     time_period = NumericProperty()
@@ -60,12 +71,12 @@ class Pomodoro(BoxLayout):
         if self.state == "work":
             self.count_start = True
             self.start = str(datetime.now()).rsplit('.', 1)[0]
-            
+
         elif self.state == "paused" and ACTIVE_STYLE == "style2":
             self.pause_but.disabled = False
             self.state = "work"
             self.count_start = True
-            
+
         self.stop = ""
         Clock.schedule_once(lambda dt: self.decrease_minutes(), 1)
         if ACTIVE_STYLE == "style1":
@@ -111,28 +122,31 @@ class Pomodoro(BoxLayout):
         self.alarm.stop()
         self.state = 'paused'
         buttons = [self.play_but,
-                   self.stop_but,
-                   self.pause_but]
+                           self.stop_but,
+                           self.pause_but]
         for but in buttons:
             but.disabled = False
         self.pause_but.disabled = True
-    
+
     def stop_animation(self):
         self.count_start = False
         self.clock.stop()
         self.alarm.stop()
         self.set_to_workstate()
         buttons = [self.play_but,
-                   self.stop_but,
-                   self.pause_but]
+                           self.stop_but,
+                           self.pause_but]
         for but in buttons:
             but.disabled = False
-            
+
     def switch_screen(self, screen):
         """
         action screens rotation handling
         """
-        self.sm.transition = SlideTransition(direction='up')
+        direction = 'up'
+        if ACTIVE_STYLE == "style2" and self.sm.current == self.sm.settings_screen.name:
+            direction = 'down'
+        self.sm.transition = SlideTransition(direction=direction)
         self.sm.current = screen
 
     def set_clock(self):
@@ -171,10 +185,6 @@ class Pomodoro(BoxLayout):
         if ACTIVE_STYLE == "style1":
             self.switch_screen('start')
 
-    def change_disablity(self, button=None):
-        if button:
-            button.disabled = not disabled
-
     def reset_time(self):
         """
         triggered when the timer reaches the end, animation, clock sound,
@@ -191,8 +201,8 @@ class Pomodoro(BoxLayout):
             self.start_button.disabled = False
         elif ACTIVE_STYLE == "style2":
             buttons = [self.play_but,
-                       self.stop_but,
-                       self.pause_but]
+                               self.stop_but,
+                               self.pause_but]
             for but in buttons:
                 but.disabled = False
             if self.state == "work":
@@ -202,7 +212,7 @@ class Pomodoro(BoxLayout):
             elif self.state == "break":
                 self.set_to_workstate()
         if ACTIVE_STYLE == "style1":
-            if self.state == "break":            
+            if self.state == "break":
                 self.switch_screen('start')
                 self.set_to_workstate()
             else:
@@ -248,14 +258,13 @@ class Pomodoro(BoxLayout):
                          x.pos[1] <= mouse_position[1] <= x.ranged[1],
                          self.buttons)
         button = None
-        if buttons:
+        if buttons and 149 > mouse_position[1] > 1 and 299 > mouse_position[0] > 1 :
             button = buttons[0]
         for but in self.buttons:
             if but != button:
                 but.inactive = True
             else:
                 but.inactive = False
-
 
 class PomodoroApp(App):
 
@@ -278,7 +287,7 @@ if __name__ == "__main__":
     """
     styles = {"style1": WINDOW_SIZE_1, "style2": WINDOW_SIZE_2}
     Window.size = styles[ACTIVE_STYLE]
-    Window.clearcolor = (1, 1, 1, 1)
+    Window.clearcolor = (.98, .98, .98, 1)
     Window.borderless = False
     Config.set('kivy', 'desktop', 1)
     Config.set('graphics', 'fullscreen', 0)

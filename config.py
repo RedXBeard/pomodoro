@@ -45,8 +45,8 @@ if not os.path.exists(directory):
     os.makedirs(directory)
 
 
-WORK_TIME_PERIOD = 5
-BREAK_TIME_PERIOD = 10
+WORK_TIME_PERIOD = 10
+BREAK_TIME_PERIOD = 5
 
 KIVY_FONTS = [{
     "name": "WebAwesome",

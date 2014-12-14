@@ -1,4 +1,5 @@
 #:kivy 1.8.0
+#:import AliasProperty kivy.properties.AliasProperty
 #:import iconic_font_name config.KIVY_ICONIC_FONT
 #:import iconic_font_path config.KIVY_ICONIC_FONT_PATH
 #:import default_font_name config.KIVY_DEFAULT_FONT
@@ -16,118 +17,176 @@
 	background_disabled_normal: ""
 	has_hover: True
 	inactive: True
-	
+
+<image>
+    canvas.before:
+        Color:
+            rgba: .98, .98, .98, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    pos: self.parent.pos
+    size: self.parent.size
+
 <Pomodoro>
 	orientation: 'vertical'
-	
+
 	minimize_but: minimize_but
 	settings_but: settings_but
 	play_but: play_but
 	pause_but: pause_but
 	stop_but: stop_but
-	
-	BoxLayout:
-		size_hint: 1.0, None
-		height: 35
-		pos_hint: {'top': 1}
-		Button:
-			id: minimize_but
-            size_hint: None, None
-            width: 30
-            height: 30
-            has_hover: False
-            name: "minimize"
-            ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
-			Image:
-				source: "assets/icons/minify.png"
-				pos: self.parent.pos
-		TextInput:
-			id: message
-			size_hint_y: None
-			hint_text: 'Enter your sprint info.'
-			height: 30
-			font_size: 12
-			multiline: False
-			font_name: default_book_font_name
-			background_color: 1,1,1,1
-			background_disabled_active: ""
-			background_disabled_normal: ""
-			background_normal: ""
-			background_active: ""
-		Button:
-			id: settings_but
-            size_hint: None, None
-            width: 30
-            height: 30
-            name: "settings"
-            ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
-			Image:
-				inactive: "assets/icons/settings_hover.png"
-				source: "assets/icons/settings.png" if self.parent.inactive else "assets/icons/settings_hover.png"
-				pos: self.parent.pos
-	
-	Label:
-		size_hint: 1.0, None
-		height: 75            	
-		text: "[color=455A64]%s[/color]"%root.time_display
-		markup: True
-		font_name: default_extralight_font_name
-		font_size: 72
-	
-	BoxLayout:
-		size_hint: 1.0, None
-		height: 30
-		
-		Label:
-			size_hint: None, 1.0
-			width: 70
-			
-		Button: 
-			id: play_but
-			size_hint: None, None
-            width: 26
-            height: 26
-            name: "play"
-            ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
-            on_press: root.start_animation()
-			Image:
-				inactive: "assets/icons/play_hover.png"
-				source: "assets/icons/play_hover.png" if (not self.parent.inactive or self.parent.disabled) and root.state in ('paused', 'work') else "assets/icons/play.png"
-				pos: self.parent.pos
-		
-		Label:
-			size_hint: None, 1.0
-			width: 38
-			
-		Button: 
-			id: pause_but
-			size_hint: None, None
-            width: 26
-            height: 26
-            name: "pause"
-            ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
-            on_press: root.pause_animation()
-			Image:
-				inactive: "assets/icons/pause_hover.png"
-				source: "assets/icons/pause_hover.png" if (not self.parent.inactive or self.parent.disabled) and root.state in ('paused','work') else "assets/icons/pause.png"
-				pos: self.parent.pos
-		
-		Label:
-			size_hint: None, 1.0
-			width: 40
-		
-		Button:
-			id: stop_but
-			size_hint: None, None
-            width: 26
-            height: 26
-            name: "stop"
-            ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
-            on_press: root.stop_animation()
-			Image:
-				inactive: "assets/icons/stop_hover.png"
-				source: "assets/icons/stop.png" if self.parent.inactive else "assets/icons/stop_hover.png"
-				pos: self.parent.pos
-	Label:
-		size_hint: 1.0, None
-		height: 10 
+    sm: sm
+
+    ScreenManager:
+        id: sm
+        action_screen: action_screen
+        settings_screen: settings_screen
+
+        Screen:
+            id: action_screen
+            name: "action_screen"
+            BoxLayout:
+                orientation: 'vertical'
+            	BoxLayout:
+            		size_hint: 1.0, None
+            		height: 35
+            		pos_hint: {'top': 1}
+            		Button:
+	        		    canvas.before:
+            		        Color:
+            		            rgba: .95, .95, .95, 1
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+
+            			id: minimize_but
+                        size_hint: None, None
+                        size: 30, 30
+                        has_hover: False
+                        name: "minimize"
+                        ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
+            			Image:
+    	        		    source: "assets/icons/minify.png"
+
+            		TextInput:
+            			id: message
+            			size_hint_y: None
+            			hint_text: 'Enter your sprint info.'
+            			height: 30
+            			font_size: 12
+            			multiline: False
+            			font_name: default_book_font_name
+            			background_color: 1, 1, 1, 1
+            			background_disabled_active: ""
+            			background_disabled_normal: ""
+            			background_normal: ""
+            			background_active: ""
+            		Button:
+            			id: settings_but
+                        size_hint: None, None
+                        size: 30, 30
+                        name: "settings"
+                        ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
+                        on_press: root.switch_screen('settings_screen')
+            			Image:
+            				inactive: "assets/icons/settings_hover.png"
+            				source: "assets/icons/settings.png" if self.parent.inactive else "assets/icons/settings_hover.png"
+
+            	Label:
+            		size_hint: 1.0, None
+            		height: 75
+            		text: "[color=455A64]%s[/color]"%root.time_display
+            		markup: True
+            		font_name: default_extralight_font_name
+            		font_size: 72
+
+            	FloatLayout:
+            		size_hint: 1.0, None
+            		height: 30
+
+            		Button:
+            			id: play_but
+            			size_hint: None, None
+                        size: 26, 26
+                        name: "play"
+                        ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
+                        on_press: root.start_animation()
+                        pos: 75, 10
+            			Image:
+            				inactive: "assets/icons/play_hover.png"
+            				source: "assets/icons/play_hover.png" if (not self.parent.inactive or self.parent.disabled) and root.state in ('paused', 'work') else "assets/icons/play.png"
+
+            		Button:
+            			id: pause_but
+            			size_hint: None, None
+                        size: 26, 26
+                        name: "pause"
+                        ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
+                        on_press: root.pause_animation()
+                        pos: 142, 10
+            			Image:
+            				inactive: "assets/icons/pause_hover.png"
+            				source: "assets/icons/pause_hover.png" if (not self.parent.inactive or self.parent.disabled) and root.state in ('paused','work') else "assets/icons/pause.png"
+
+            		Button:
+            			id: stop_but
+            			size_hint: None, None
+                        size: 26, 26
+                        name: "stop"
+                        ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
+                        on_press: root.stop_animation()
+                        pos: 198, 10
+            			Image:
+            				inactive: "assets/icons/stop_hover.png"
+            				source: "assets/icons/stop.png" if self.parent.inactive else "assets/icons/stop_hover.png"
+            	Label:
+            		size_hint: 1.0, None
+            		height: 10
+
+        Screen:
+            id: settings_screen
+            name: "settings_screen"
+            FloatLayout:
+                Button:
+                    size_hint: None, None
+                    size: 54, 21
+                    on_press: root.switch_screen('action_screen')
+                    pos: 235, 115
+                    has_hover: False
+                    inactive: False
+        			Image:
+        				source: "assets/icons/done.png"
+
+                Label:
+                    size_hint: None, None
+                    size: 67, 25
+                    pos: 10, 110
+                    Image:
+        				source: "assets/icons/volume_title.png"
+
+                BoxLayout:
+                    canvas.before:
+                        Color:
+                            rgba: 1,1,1,1
+                        Rectangle:
+                            size: self.size
+                            pos: self.pos
+                	orientation: 'vertical'
+
+                    size_hint: None, None
+                    height: 20
+                    width: 160
+                    pos: 10, 80
+
+                    MyScatterLayout:
+                        size_hint: None, None
+                        size: 20, 20
+                        do_rotation: False
+                        do_translation_y: False
+                        Image:
+                            source: "assets/icons/volume_handle.png"
+                    Label:
+
+
+
