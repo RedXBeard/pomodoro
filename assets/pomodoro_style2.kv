@@ -184,19 +184,16 @@
 
                     MyScatterLayout:
                         id: scatter
+                        pos_hint: {'right': 1}
                         size_hint: None, None
                         size: 20, 20
                         do_rotation: False
                         do_translation_y: False
                         do_scale: False
+                        pos: self.parent.pos[0]+40, self.parent.pos[1]
                         Image:
-                            canvas.before:
-                                Color:
-                                    rgba: 1, 1, 1, 0
-                                Ellipse:
-                                    pos: self.pos
-                                    size: self.size
                             source: "assets/icons/volume_handle.png"
-                            pos: self.parent.pos[0]-10, self.parent.pos[1]
+                            pos: self.parent.pos[0]+10, self.parent.pos[1]
+
 
 

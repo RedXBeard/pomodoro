@@ -38,11 +38,11 @@ class MyScatterLayout(ScatterLayout):
     def on_touch_move(self, touch):
         possibility = self.grab_posx + (touch.pos[0] - self.pre_posx)
         if touch.grab_list:
-            if 10 <= possibility <= 170:
+            if -10 <= possibility <= 150:
                 super(MyScatterLayout, self).on_touch_move(touch)
                 self.current_posx = possibility
                 pomodoro = self.parent.parent.parent.parent.parent
-                volume = (1 / float((170 - 10))) * self.pos[0]
+                volume = (1 / float((150 + 10))) * self.pos[0]
                 pomodoro.clock.volume = volume
                 pomodoro.alarm.volume = volume
 
@@ -50,7 +50,6 @@ class MyScatterLayout(ScatterLayout):
         super(MyScatterLayout, self).on_touch_down(touch)
         self.pre_posx = touch.pos[0]
         self.grab_posx = self.pos[0]
-        print self.pos[0]
 
 class Pomodoro(BoxLayout):
     time_period = NumericProperty()
