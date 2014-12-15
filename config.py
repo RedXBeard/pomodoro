@@ -43,15 +43,15 @@ DB = JsonStore(DATAFILE)
 directory = os.path.dirname(DATAFILE)
 if not os.path.exists(directory):
     os.makedirs(directory)
-    DB.store_put('theme', 'style1')
+    DB.store_put('theme', 'style2')
 if not DB.store_exists('theme'):
-    DB.store_put('theme', 'style1')
+    DB.store_put('theme', 'style2')
 DB.store_sync()
 
 ACTIVE_STYLE = DB.store_get("theme")
 
-WORK_TIME_PERIOD = 50
-BREAK_TIME_PERIOD = 25
+WORK_TIME_PERIOD = 10
+BREAK_TIME_PERIOD = 5
 
 KIVY_FONTS = [{
     "name": "WebAwesome",
