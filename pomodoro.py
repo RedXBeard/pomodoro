@@ -33,6 +33,7 @@ def get_buttons(obj, buttons=[]):
 
 
 class MyScatterLayout(ScatterLayout):
+
     """
     Using scatter as slider.
     """
@@ -176,7 +177,7 @@ class Pomodoro(BoxLayout):
         """
         result = True
         if self.server_url and self.server_user:
-            state_time = {"work":1500, "break":300, "stop": 1800}
+            state_time = {"work": 1500, "break": 300, "stop": 1800}
             total_time = state_time[state] if state else state_time[self.state]
             result = REQ_GET(self.server_url, params={"user": self.server_user,
                                                       "total": total_time,
@@ -198,7 +199,7 @@ class Pomodoro(BoxLayout):
         self.disable_buttons()
         self.pause_but.disabled = True
         while True:
-            res_result = self.send_data(state = state)
+            res_result = self.send_data(state=state)
             if res_result.status_code == 200:
                 break
         self.server_send = False
