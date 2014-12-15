@@ -37,6 +37,7 @@
 	play_but: play_but
 	pause_but: pause_but
 	stop_but: stop_but
+	message: message
     sm: sm
 
     ScreenManager:
@@ -79,6 +80,8 @@
             			multiline: False
             			font_name: default_book_font_name
             			background_color: 1, 1, 1, 1
+            			on_text_validate: root.keep_info()
+            			disabled: True
             			background_disabled_active: ""
             			background_disabled_normal: ""
             			background_normal: ""
@@ -116,7 +119,7 @@
                         pos: 75, 10
             			Image:
             				inactive: "assets/icons/play_hover.png"
-            				source: "assets/icons/play_hover.png" if (not self.parent.inactive or self.parent.disabled) and root.state in ('paused', 'work') else "assets/icons/play.png"
+            				source: "assets/icons/play_hover.png" if (not self.parent.inactive or self.parent.disabled) and root.state in ('paused', 'work', 'break') else "assets/icons/play.png"
 
             		Button:
             			id: pause_but
@@ -167,7 +170,7 @@
         				source: "assets/icons/volume_title.png"
 
                 BoxLayout:
-                    canvas.after:
+                    canvas.before:
                         Color:
                             rgba: COLOR_GREEN
                         Rectangle:

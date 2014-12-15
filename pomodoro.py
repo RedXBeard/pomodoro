@@ -16,6 +16,7 @@ from kivy.uix.scatter import Scatter
 from datetime import datetime
 from config import *
 
+
 def get_buttons(obj, buttons=[]):
     """
     Buttons which are capable of hover action will
@@ -27,6 +28,7 @@ def get_buttons(obj, buttons=[]):
             buttons.append(ch)
         get_buttons(ch, buttons)
     return buttons
+
 
 class MyScatterLayout(ScatterLayout):
     rstop = BooleanProperty(False)
@@ -51,6 +53,7 @@ class MyScatterLayout(ScatterLayout):
         self.pre_posx = touch.pos[0]
         self.grab_posx = self.pos[0]
 
+
 class Pomodoro(BoxLayout):
     time_period = NumericProperty()
     time_display = StringProperty()
@@ -74,6 +77,13 @@ class Pomodoro(BoxLayout):
         if ACTIVE_STYLE == "style1":
             self.sm.current = 'start'
 
+    def disable_buttons(self):
+        buttons = [self.play_but,
+                   self.stop_but,
+                   self.pause_but]
+        for but in buttons:
+            but.disabled = False
+
     def start_animation(self):
         """
         starts animation for rotation, if state is on 'work'
@@ -95,6 +105,8 @@ class Pomodoro(BoxLayout):
             self.start_button.disabled = True
         if ACTIVE_STYLE == "style2":
             self.play_but.disabled = True
+            self.message.disabled = True
+            self.message.focus = False
 
     def decrease_minutes(self):
         """
@@ -133,11 +145,7 @@ class Pomodoro(BoxLayout):
         self.clock.stop()
         self.alarm.stop()
         self.state = 'paused'
-        buttons = [self.play_but,
-                           self.stop_but,
-                           self.pause_but]
-        for but in buttons:
-            but.disabled = False
+        self.disable_buttons()
         self.pause_but.disabled = True
 
     def stop_animation(self):
@@ -145,11 +153,8 @@ class Pomodoro(BoxLayout):
         self.clock.stop()
         self.alarm.stop()
         self.set_to_workstate()
-        buttons = [self.play_but,
-                           self.stop_but,
-                           self.pause_but]
-        for but in buttons:
-            but.disabled = False
+        self.message.text = ""
+        self.disable_buttons()
 
     def switch_screen(self, screen):
         """
@@ -165,8 +170,9 @@ class Pomodoro(BoxLayout):
         """
         rotation for per second calculation.
         """
-        self.perrotation = Vector(1, 1).angle(
-            Vector(1, 1).rotate(360 / float(self.time_period)))
+        if self.time_period:
+            self.perrotation = Vector(1, 1).angle(
+                Vector(1, 1).rotate(360 / float(self.time_period)))
 
     def set_to_workstate(self):
         """
@@ -212,17 +218,19 @@ class Pomodoro(BoxLayout):
         if ACTIVE_STYLE == "style1":
             self.start_button.disabled = False
         elif ACTIVE_STYLE == "style2":
-            buttons = [self.play_but,
-                               self.stop_but,
-                               self.pause_but]
-            for but in buttons:
-                but.disabled = False
+            self.disable_buttons()
             if self.state == "work":
                 self.state = "break"
                 self.set_to_breakstate()
-                self.start_animation()
+                self.message.disabled = False
+                self.message.focus = True
+                self.play_but.disabled = True
+                self.pause_but.disabled = True
+                self.play_but.inactive = True
+                self.pause_but.inactive = True
             elif self.state == "break":
                 self.set_to_workstate()
+                self.message.text = ""
         if ACTIVE_STYLE == "style1":
             if self.state == "break":
                 self.switch_screen('start')
@@ -238,18 +246,22 @@ class Pomodoro(BoxLayout):
         if self.clock:
             self.clock.volume = on_off
 
-    def keep_info(self, text):
+    def keep_info(self, text=None):
         """
         after each pomodoro in 'work' state an information is taken
         from user and to log that with other necessary informations
         collection is written in a file.
         """
+        if not text:
+            text = self.message.text.strip()
+
         if text:
             data = dict(date_from=self.start,
                         date_to=self.stop,
                         content=text,
                         is_sent=False)
-            self.message.text = ""
+            if ACTIVE_STYLE == "style1":
+                self.message.text = ""
             current_day = self.start.rsplit(" ", 1)[0]
             try:
                 existing_data = DB.store_get(current_day)
@@ -260,6 +272,8 @@ class Pomodoro(BoxLayout):
             DB.store_sync()
             if ACTIVE_STYLE == "style1":
                 self.switch_screen('action')
+            elif ACTIVE_STYLE == "style2":
+                self.start_animation()
 
     def on_mouse_pos(self, *args):
         """
@@ -270,13 +284,14 @@ class Pomodoro(BoxLayout):
                          x.pos[1] <= mouse_position[1] <= x.ranged[1],
                          self.buttons)
         button = None
-        if buttons and 149 > mouse_position[1] > 1 and 299 > mouse_position[0] > 1 :
+        if buttons and 149 > mouse_position[1] > 1 and 299 > mouse_position[0] > 1:
             button = buttons[0]
         for but in self.buttons:
             if but != button:
                 but.inactive = True
             else:
                 but.inactive = False
+
 
 class PomodoroApp(App):
 
