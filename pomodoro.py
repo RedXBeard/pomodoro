@@ -393,11 +393,13 @@ class Pomodoro(BoxLayout):
         theme = DB.store_get("theme")
         if theme == 'style3':
             theme = 'style2'
+            self.toggle_source.source = "assets/icons/switches_to_dark.png"
         else:
             theme = 'style3'
+            self.toggle_source.source = "assets/icons/switches_to_light.png"
         DB.store_put('theme', theme)
         DB.store_sync()
-        self.restart()
+        Clock.schedule_once(lambda dt: self.restart(), .5)
         
     def restart(self):
         args = sys.argv[:]

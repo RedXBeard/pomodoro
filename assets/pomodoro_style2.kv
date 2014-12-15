@@ -38,6 +38,7 @@
 	pause_but: pause_but
 	stop_but: stop_but
 	message: message
+	toggle_source: toggle_source
     sm: sm
 
     ScreenManager:
@@ -249,6 +250,7 @@
                 	pos: 75, 40
                 	on_press: root.change_theme()
 					Image:
+						id: toggle_source
                     	source: "assets/icons/switches_to_dark.png"
 
 				Label:
