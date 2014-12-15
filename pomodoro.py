@@ -11,6 +11,7 @@ from kivy.animation import Animation
 from kivy.core.audio import SoundLoader
 from kivy.config import Config
 from kivy.uix.screenmanager import SlideTransition
+from kivy.utils import get_color_from_hex
 from time import strftime, gmtime
 from kivy.uix.scatter import Scatter
 from datetime import datetime
@@ -94,7 +95,7 @@ class Pomodoro(BoxLayout):
             self.count_start = True
             self.start = str(datetime.now()).rsplit('.', 1)[0]
 
-        elif self.state == "paused" and ACTIVE_STYLE == "style2":
+        elif self.state == "paused" and ACTIVE_STYLE in ("style2", "style3"):
             self.pause_but.disabled = False
             self.state = "work"
             self.count_start = True
@@ -103,10 +104,12 @@ class Pomodoro(BoxLayout):
         Clock.schedule_once(lambda dt: self.decrease_minutes(), 1)
         if ACTIVE_STYLE == "style1":
             self.start_button.disabled = True
-        if ACTIVE_STYLE == "style2":
+        if ACTIVE_STYLE in ("style2", "style3"):
             self.play_but.disabled = True
             self.message.disabled = True
             self.message.focus = False
+            if ACTIVE_STYLE == "style3":
+                self.message.background = (0.078, 0.090, 0.094, 1)
 
     def decrease_minutes(self):
         """
@@ -161,7 +164,7 @@ class Pomodoro(BoxLayout):
         action screens rotation handling
         """
         direction = 'up'
-        if ACTIVE_STYLE == "style2" and self.sm.current == self.sm.settings_screen.name:
+        if ACTIVE_STYLE in ("style2", "style3") and self.sm.current == self.sm.settings_screen.name:
             direction = 'down'
         self.sm.transition = SlideTransition(direction=direction)
         self.sm.current = screen
@@ -217,13 +220,17 @@ class Pomodoro(BoxLayout):
         self.alarm.play()
         if ACTIVE_STYLE == "style1":
             self.start_button.disabled = False
-        elif ACTIVE_STYLE == "style2":
+        elif ACTIVE_STYLE in ("style2", "style3"):
             self.disable_buttons()
             if self.state == "work":
                 self.state = "break"
                 self.set_to_breakstate()
+                
                 self.message.disabled = False
                 self.message.focus = True
+                if ACTIVE_STYLE == "style3":
+                    self.message.background_color = get_color_from_hex("ffffff")
+                
                 self.play_but.disabled = True
                 self.pause_but.disabled = True
                 self.play_but.inactive = True
@@ -256,6 +263,8 @@ class Pomodoro(BoxLayout):
             text = self.message.text.strip()
 
         if text:
+            self.message.background_color = (0.078, 0.090, 0.094, 1)
+            
             data = dict(date_from=self.start,
                         date_to=self.stop,
                         content=text,
@@ -272,7 +281,7 @@ class Pomodoro(BoxLayout):
             DB.store_sync()
             if ACTIVE_STYLE == "style1":
                 self.switch_screen('action')
-            elif ACTIVE_STYLE == "style2":
+            elif ACTIVE_STYLE in ("style2", "style3"):
                 self.start_animation()
 
     def on_mouse_pos(self, *args):
@@ -297,14 +306,14 @@ class PomodoroApp(App):
 
     def __init__(self, *args, **kwargs):
         super(PomodoroApp, self).__init__(*args, **kwargs)
-        styles = {"style1": STYLE1, "style2": STYLE2}
+        styles = {"style1": STYLE1, "style2": STYLE2, "style3": STYLE3}
         Builder.load_file(styles[ACTIVE_STYLE])
         self.icon = ICON_PATH
         self.title = "Pomodoro"
 
     def build(self):
         layout = Pomodoro()
-        if ACTIVE_STYLE == "style2":
+        if ACTIVE_STYLE in ("style2", "style3"):
             Window.bind(mouse_pos=layout.on_mouse_pos)
         return layout
 
@@ -312,9 +321,14 @@ if __name__ == "__main__":
     """
     Window sizes and wanted skills are set, then app calls
     """
-    styles = {"style1": WINDOW_SIZE_1, "style2": WINDOW_SIZE_2}
+    styles = {"style1": WINDOW_SIZE_1,
+              "style2": WINDOW_SIZE_2, "style3": WINDOW_SIZE_2}
     Window.size = styles[ACTIVE_STYLE]
-    Window.clearcolor = (.98, .98, .98, 1)
+    if ACTIVE_STYLE == "style3":
+        Window.clearcolor = (get_color_from_hex("141718"))
+        print get_color_from_hex("eceff1")
+    else:
+        Window.clearcolor = (.98, .98, .98, 1)
     Window.borderless = False
     Config.set('kivy', 'desktop', 1)
     Config.set('graphics', 'fullscreen', 0)

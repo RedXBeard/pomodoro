@@ -28,8 +28,9 @@ WINDOW_SIZE_2 = (300, 150)
 
 STYLE1 = "assets/pomodoro_style1.kv"
 STYLE2 = "assets/pomodoro_style2.kv"
+STYLE3 = "assets/pomodoro_style3.kv"
 
-ACTIVE_STYLE = "style2"
+ACTIVE_STYLE = "style3"
 
 if PATH_SEPERATOR == '/':
     cmd = "echo $HOME"
@@ -90,4 +91,4 @@ KIVY_ICONIC_FONT_PATH = filter(
 
 COLOR1 = get_color_from_hex('E62E25')
 COLOR_RED = (1, .85, .85, 1)
-COLOR_GREEN = get_color_from_hex('52F041')
+COLOR_GREEN = get_color_from_hex('66BB6A')
