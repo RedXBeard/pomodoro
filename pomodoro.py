@@ -15,6 +15,7 @@ from kivy.utils import get_color_from_hex
 from time import strftime, gmtime
 from kivy.uix.scatter import Scatter
 from datetime import datetime
+from requests import get as REQ_GET
 from config import *
 
 
@@ -32,6 +33,9 @@ def get_buttons(obj, buttons=[]):
 
 
 class MyScatterLayout(ScatterLayout):
+    """
+    Using scatter as slider.
+    """
     rstop = BooleanProperty(False)
     lstop = BooleanProperty(False)
     pre_posx = NumericProperty()
@@ -39,6 +43,10 @@ class MyScatterLayout(ScatterLayout):
     current_posx = NumericProperty()
 
     def on_touch_move(self, touch):
+        """
+        Movement should be in between given positions. 
+        For this app. positions are static.
+        """
         possibility = self.grab_posx + (touch.pos[0] - self.pre_posx)
         if touch.grab_list:
             if -10 <= possibility <= 150:
@@ -50,6 +58,10 @@ class MyScatterLayout(ScatterLayout):
                 pomodoro.alarm.volume = volume
 
     def on_touch_down(self, touch):
+        """
+        To understand the image movement, to left or to right; 
+        previous position must be kept and keep updating.
+        """
         super(MyScatterLayout, self).on_touch_down(touch)
         self.pre_posx = touch.pos[0]
         self.grab_posx = self.pos[0]
@@ -66,9 +78,12 @@ class Pomodoro(BoxLayout):
     state = StringProperty()
     start = StringProperty()
     stop = StringProperty()
-    server_url = StringProperty()
-    server_user = StringProperty("")
 
+    server_url = StringProperty(
+        "http://172.18.140.79:8000/api/v1.0/put/pomodoro")
+    server_user = StringProperty("barbaros")
+
+    server_send = BooleanProperty(False)
     count_start = BooleanProperty(False)
     connect_server = BooleanProperty(False)
 
@@ -85,6 +100,9 @@ class Pomodoro(BoxLayout):
             self.sm.current = 'start'
 
     def disable_buttons(self):
+        """
+        play, stop and pause buttons disability attr. handler.
+        """
         buttons = [self.play_but,
                    self.stop_but,
                    self.pause_but]
@@ -107,6 +125,8 @@ class Pomodoro(BoxLayout):
             self.count_start = True
 
         self.stop = ""
+        if not self.server_send:
+            self.send_data()
         Clock.schedule_once(lambda dt: self.decrease_minutes(), 1)
         if ACTIVE_STYLE == "style1":
             self.start_button.disabled = True
@@ -137,7 +157,8 @@ class Pomodoro(BoxLayout):
             self.time_period -= 1
             self.time_display = strftime('%M:%S', gmtime(self.time_period))
             self.time_minute, self.time_second = self.time_display.split(':')
-
+            if not self.server_send:
+                self.send_data()
             if ACTIVE_STYLE == "style1":
                 if self.animation:
                     self.animation.stop(self)
@@ -149,23 +170,59 @@ class Pomodoro(BoxLayout):
 
             Clock.schedule_once(lambda dt: self.decrease_minutes(), 1)
 
+    def send_data(self, state=""):
+        """
+        To update server side info, if requested.
+        """
+        result = True
+        if self.server_url and self.server_user:
+            state_time = {"work":1500, "break":300, "stop": 1800}
+            total_time = state_time[state] if state else state_time[self.state]
+            result = REQ_GET(self.server_url, params={"user": self.server_user,
+                                                      "total": total_time,
+                                                      "now": self.time_period,
+                                                      "state": self.state}, timeout=1,)
+            self.server_send = result
+        return result
+
     def pause_animation(self):
+        """
+        To pause the timer. in this change of state 
+        if server side visuality wanted, updater should be called. 
+        """
         self.count_start = False
         self.clock.stop()
         self.alarm.stop()
+        state = self.state
         self.state = 'paused'
         self.disable_buttons()
         self.pause_but.disabled = True
+        while True:
+            res_result = self.send_data(state = state)
+            if res_result.status_code == 200:
+                break
+        self.server_send = False
 
     def stop_animation(self):
+        """
+        To stop the timer. in this change of state 
+        if server side visuality wanted, updater should be called. 
+        """
         self.count_start = False
         self.clock.stop()
         self.alarm.stop()
+        self.state = "stop"
+        while True:
+            res_result = self.send_data()
+            if res_result.status_code == 200:
+                break
         self.set_to_workstate()
         self.message.text = ""
-        self.message.background_color = (0.078, 0.090, 0.094, 1)
+        if ACTIVE_STYLE == "style3":
+            self.message.background_color = (0.078, 0.090, 0.094, 1)
         self.message.disabled = True
         self.disable_buttons()
+        self.server_send = False
 
     def switch_screen(self, screen, side=None):
         """
@@ -274,7 +331,8 @@ class Pomodoro(BoxLayout):
             text = self.message.text.strip()
 
         if text:
-            self.message.background_color = (0.078, 0.090, 0.094, 1)
+            if ACTIVE_STYLE == "style3":
+                self.message.background_color = (0.078, 0.090, 0.094, 1)
 
             data = dict(date_from=self.start,
                         date_to=self.stop,
@@ -348,7 +406,6 @@ if __name__ == "__main__":
     Window.size = styles[ACTIVE_STYLE]
     if ACTIVE_STYLE == "style3":
         Window.clearcolor = (get_color_from_hex("141718"))
-        print get_color_from_hex("eceff1")
     else:
         Window.clearcolor = (.98, .98, .98, 1)
     Window.borderless = False

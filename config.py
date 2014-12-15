@@ -50,8 +50,8 @@ DB.store_sync()
 
 ACTIVE_STYLE = DB.store_get("theme")
 
-WORK_TIME_PERIOD = 1500
-BREAK_TIME_PERIOD = 300
+WORK_TIME_PERIOD = 50
+BREAK_TIME_PERIOD = 25
 
 KIVY_FONTS = [{
     "name": "WebAwesome",
