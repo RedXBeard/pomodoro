@@ -199,8 +199,8 @@
                         Color:
                             rgba: COLOR_GREEN
                         Rectangle:
-                            size: 160, 3 #self.size # w - h
-                            pos: self.pos[0], self.pos[1]+10# x - y
+                            size: 160, 3
+                            pos: self.pos[0], self.pos[1]+10
                 	orientation: 'vertical'
 
                     scatter: scatter
@@ -223,5 +223,42 @@
                             source: "assets/icons/volume_handle.png"
                             pos: self.parent.pos[0]+10, self.parent.pos[1]
 
+				Label:
+                	text: '[color=455A64]Theme[/color]'
+                	size_hint: None, None
+                	size: 40, 20
+                	pos: 37, 60
+					font_size: 13
+                    font_name: default_book_font_name
+                    markup: True
+                
+                Label:
+                	text: '[color=455A64]Dark[/color]'
+                	size_hint: None, None
+                	size: 35, 20
+                	pos: 37, 40
+					font_size: 13
+                    font_name: default_book_font_name
+                    text_size: self.width, None
+                    halign: 'left'
+                    markup: True
+                
+                Button:
+                	size_hint: None, None
+                	size: 30, 20
+                	pos: 75, 40
+                	on_press: root.change_theme()
+					Image:
+                    	source: "assets/icons/switches_to_dark.png"
 
+				Label:
+                	text: '[color=455A64]Light[/color]'
+                	size_hint: None, None
+                	size: 40, 20
+                	pos: 107, 40
+					font_size: 13
+                    font_name: default_book_font_name
+                    text_size: self.width, self.height
+                    halign: 'right'
+                    markup: True
 

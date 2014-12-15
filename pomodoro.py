@@ -1,3 +1,4 @@
+import sys
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scatterlayout import ScatterLayout
@@ -5,7 +6,8 @@ from kivy.uix.label import Label
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.vector import Vector
-from kivy.properties import NumericProperty, StringProperty, ListProperty, BooleanProperty
+from kivy.properties import (NumericProperty, StringProperty, 
+                             ListProperty, BooleanProperty)
 from kivy.clock import Clock
 from kivy.animation import Animation
 from kivy.core.audio import SoundLoader
@@ -80,8 +82,8 @@ class Pomodoro(BoxLayout):
     start = StringProperty()
     stop = StringProperty()
 
-    server_url = StringProperty(
-        "http://172.18.140.79:8000/api/v1.0/put/pomodoro")
+    server_url = StringProperty()
+        #"http://172.18.140.79:8000/api/v1.0/put/pomodoro"
     server_user = StringProperty("barbaros")
 
     server_send = BooleanProperty(False)
@@ -179,10 +181,12 @@ class Pomodoro(BoxLayout):
         if self.server_url and self.server_user:
             state_time = {"work": 1500, "break": 300, "stop": 1800}
             total_time = state_time[state] if state else state_time[self.state]
-            result = REQ_GET(self.server_url, params={"user": self.server_user,
-                                                      "total": total_time,
-                                                      "now": self.time_period,
-                                                      "state": self.state}, timeout=1,)
+            result = REQ_GET(self.server_url, 
+                             params={"user": self.server_user,
+                                     "total": total_time,
+                                     "now": self.time_period,
+                                     "state": self.state}, 
+                             timeout=1,)
             self.server_send = result
         return result
 
@@ -230,7 +234,8 @@ class Pomodoro(BoxLayout):
         action screens rotation handling
         """
         direction = 'up'
-        if ACTIVE_STYLE in ("style2", "style3") and self.sm.current == self.sm.settings_screen.name:
+        if ACTIVE_STYLE in ("style2", "style3") and \
+                self.sm.current == self.sm.settings_screen.name:
             direction = 'down'
         if side:
             direction = side
@@ -370,19 +375,35 @@ class Pomodoro(BoxLayout):
         hover action handling, for capable buttons.
         """
         mouse_position = args[1]
-        buttons = filter(lambda x: x.pos[0] <= mouse_position[0] <= x.ranged[0] and
+        buttons = filter(lambda x: 
+                         x.pos[0] <= mouse_position[0] <= x.ranged[0] and
                          x.pos[1] <= mouse_position[1] <= x.ranged[1],
                          self.buttons)
         button = None
-        if buttons and 149 > mouse_position[1] > 1 and 299 > mouse_position[0] > 1:
+        if buttons and 149 > mouse_position[1] > 1 and \
+                       299 > mouse_position[0] > 1:
             button = buttons[0]
         for but in self.buttons:
             if but != button:
                 but.inactive = True
             else:
                 but.inactive = False
-
-
+    
+    def change_theme(self):
+        theme = DB.store_get("theme")
+        if theme == 'style3':
+            theme = 'style2'
+        else:
+            theme = 'style3'
+        DB.store_put('theme', theme)
+        DB.store_sync()
+        self.restart()
+        
+    def restart(self):
+        args = sys.argv[:]
+        args.insert(0, sys.executable)
+        os.execv(sys.executable, args)
+        
 class PomodoroApp(App):
 
     def __init__(self, *args, **kwargs):
@@ -403,7 +424,8 @@ if __name__ == "__main__":
     Window sizes and wanted skills are set, then app calls
     """
     styles = {"style1": WINDOW_SIZE_1,
-              "style2": WINDOW_SIZE_2, "style3": WINDOW_SIZE_2}
+              "style2": WINDOW_SIZE_2, 
+              "style3": WINDOW_SIZE_2}
     Window.size = styles[ACTIVE_STYLE]
     if ACTIVE_STYLE == "style3":
         Window.clearcolor = (get_color_from_hex("141718"))
