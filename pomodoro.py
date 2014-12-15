@@ -57,16 +57,22 @@ class MyScatterLayout(ScatterLayout):
 
 class Pomodoro(BoxLayout):
     time_period = NumericProperty()
+    rotation = NumericProperty(0)
+    sprint_count = NumericProperty(0)
+
     time_display = StringProperty()
     time_minute = StringProperty()
     time_second = StringProperty()
-    rotation = NumericProperty(0)
-    sprint_count = NumericProperty(0)
     state = StringProperty()
     start = StringProperty()
     stop = StringProperty()
-    buttons = ListProperty()
+    server_url = StringProperty()
+    server_user = StringProperty("")
+
     count_start = BooleanProperty(False)
+    connect_server = BooleanProperty(False)
+
+    buttons = ListProperty()
 
     def __init__(self, *args, **kwargs):
         super(Pomodoro, self).__init__(*args, **kwargs)
@@ -157,15 +163,19 @@ class Pomodoro(BoxLayout):
         self.alarm.stop()
         self.set_to_workstate()
         self.message.text = ""
+        self.message.background_color = (0.078, 0.090, 0.094, 1)
+        self.message.disabled = True
         self.disable_buttons()
 
-    def switch_screen(self, screen):
+    def switch_screen(self, screen, side=None):
         """
         action screens rotation handling
         """
         direction = 'up'
         if ACTIVE_STYLE in ("style2", "style3") and self.sm.current == self.sm.settings_screen.name:
             direction = 'down'
+        if side:
+            direction = side
         self.sm.transition = SlideTransition(direction=direction)
         self.sm.current = screen
 
@@ -225,12 +235,13 @@ class Pomodoro(BoxLayout):
             if self.state == "work":
                 self.state = "break"
                 self.set_to_breakstate()
-                
+
                 self.message.disabled = False
                 self.message.focus = True
                 if ACTIVE_STYLE == "style3":
-                    self.message.background_color = get_color_from_hex("ffffff")
-                
+                    self.message.background_color = get_color_from_hex(
+                        "ffffff")
+
                 self.play_but.disabled = True
                 self.pause_but.disabled = True
                 self.play_but.inactive = True
@@ -264,7 +275,7 @@ class Pomodoro(BoxLayout):
 
         if text:
             self.message.background_color = (0.078, 0.090, 0.094, 1)
-            
+
             data = dict(date_from=self.start,
                         date_to=self.stop,
                         content=text,
@@ -283,6 +294,17 @@ class Pomodoro(BoxLayout):
                 self.switch_screen('action')
             elif ACTIVE_STYLE in ("style2", "style3"):
                 self.start_animation()
+
+    def update_connect_server(self):
+        self.connect_server = not self.connect_server
+        if self.connect_server:
+            self.switch_screen(server_screen, side='right')
+
+    def set_server_user(self):
+        pass
+
+    def set_server_url(self):
+        pass
 
     def on_mouse_pos(self, *args):
         """

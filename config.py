@@ -30,7 +30,6 @@ STYLE1 = "assets/pomodoro_style1.kv"
 STYLE2 = "assets/pomodoro_style2.kv"
 STYLE3 = "assets/pomodoro_style3.kv"
 
-ACTIVE_STYLE = "style3"
 
 if PATH_SEPERATOR == '/':
     cmd = "echo $HOME"
@@ -44,10 +43,15 @@ DB = JsonStore(DATAFILE)
 directory = os.path.dirname(DATAFILE)
 if not os.path.exists(directory):
     os.makedirs(directory)
+    DB.store_put('theme', 'style1')
+if not DB.store_exists('theme'):
+    DB.store_put('theme', 'style1')
+DB.store_sync()
 
+ACTIVE_STYLE = DB.store_get("theme")
 
-WORK_TIME_PERIOD = 10
-BREAK_TIME_PERIOD = 5
+WORK_TIME_PERIOD = 1500
+BREAK_TIME_PERIOD = 300
 
 KIVY_FONTS = [{
     "name": "WebAwesome",

@@ -89,14 +89,38 @@
             			Image:
             				inactive: "assets/icons/settings_hover.png"
             				source: "assets/icons/settings.png" if self.parent.inactive else "assets/icons/settings_hover.png"
-
-            	Label:
-            		size_hint: 1.0, None
-            		height: 75
-            		text: "[color=ECEFF1]%s[/color]"%root.time_display
-            		markup: True
-            		font_name: default_extralight_font_name
-            		font_size: 72
+				BoxLayout:
+					height: 75
+					Label:
+						size_hint_x: None
+						width: 60
+	            	Label:
+	            		size_hint_y: None
+	            		height: 75
+	            		text_size: self.width, None
+	            		text: "[color=ECEFF1]%s[/color]"%root.time_minute
+	            		markup: True
+	            		font_name: default_extralight_font_name
+	            		font_size: 72
+	            	Label:
+	            		size_hint: None, None
+	            		size: 20, 75
+	            		text: "[color=ECEFF1]:[/color]"
+	            		markup: True
+	            		font_name: default_extralight_font_name
+	            		font_size: 72
+	            	Label:
+	            		size_hint_y: None
+	            		height: 75
+	            		text_size: self.width, None
+	            		text: "[color=ECEFF1]%s[/color]"%root.time_second
+	            		markup: True
+	            		halign: 'right'
+	            		font_name: default_extralight_font_name
+	            		font_size: 72
+	            	Label:
+						size_hint_x: None
+						width: 60
 
             	FloatLayout:
             		size_hint: 1.0, None
@@ -109,7 +133,7 @@
                         name: "play"
                         ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
                         on_press: root.start_animation()
-                        pos: 75, 10
+                        pos: 64, 10
             			Image:
             				inactive: "assets/icons/play_hover.png"
             				source: "assets/icons/play_hover.png" if (not self.parent.inactive or self.parent.disabled) and root.state in ('paused', 'work', 'break') else "assets/icons/play.png"
@@ -133,7 +157,7 @@
                         name: "stop"
                         ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
                         on_press: root.stop_animation()
-                        pos: 198, 10
+                        pos: 208, 10
             			Image:
             				inactive: "assets/icons/stop_hover.png"
             				source: "assets/icons/stop.png" if self.parent.inactive else "assets/icons/stop_hover.png"
@@ -153,14 +177,22 @@
                     has_hover: False
                     inactive: False
         			Image:
-        				source: "assets/icons/done.png"
+        				source: "assets/icons/done_dark.png"
 
                 Label:
                     size_hint: None, None
-                    size: 67, 25
-                    pos: 10, 110
+                    size: 21, 25
+                    pos: 10, 115
                     Image:
-        				source: "assets/icons/volume_title.png"
+        				source: "assets/icons/volume.png"
+        		Label:
+                    size_hint: None, None
+                    size: 21, 25
+                    pos: 50, 115
+                    text: "[color=eceff1]Volume[/color]"
+                    font_size: 13
+                    font_name: default_book_font_name
+                    markup: True
 
                 BoxLayout:
                     canvas.before:
@@ -176,7 +208,7 @@
                     size_hint: None, None
                     height: 20
                     width: 160
-                    pos: 10, 80
+                    pos: 10, 90
 
                     MyScatterLayout:
                         id: scatter
@@ -190,6 +222,5 @@
                         Image:
                             source: "assets/icons/volume_handle.png"
                             pos: self.parent.pos[0]+10, self.parent.pos[1]
-
 
 
