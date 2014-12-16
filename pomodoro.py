@@ -101,7 +101,7 @@ class Pomodoro(BoxLayout):
 
         try:
             last_session = DB.store_get('last_session')
-        except ValueError:
+        except KeyError:
             last_session = ""
         if last_session:
             self.set_restart_session(last_session)
