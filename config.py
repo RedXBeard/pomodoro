@@ -37,8 +37,8 @@ else:
     cmd = "echo %USERPROFILE%"
 
 out = run_syscall(cmd)
-DATAFILE = "%(out)s%(ps)s.kivypomomdoro%(ps)spomodoro" % {'out': out.rstrip(),
-                                                          'ps': PATH_SEPERATOR}
+DATAFILE = "%(out)s%(ps)s.kivypomodoro%(ps)spomodoro" % {'out': out.rstrip(),
+                                                         'ps': PATH_SEPERATOR}
 DB = JsonStore(DATAFILE)
 directory = os.path.dirname(DATAFILE)
 if not os.path.exists(directory):
@@ -50,7 +50,7 @@ DB.store_sync()
 
 ACTIVE_STYLE = DB.store_get("theme")
 
-WORK_TIME_PERIOD = 1500 
+WORK_TIME_PERIOD = 1500
 BREAK_TIME_PERIOD = 300
 
 KIVY_FONTS = [{

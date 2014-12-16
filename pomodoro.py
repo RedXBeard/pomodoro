@@ -83,7 +83,7 @@ class Pomodoro(BoxLayout):
     stop = StringProperty()
 
     server_url = StringProperty()
-        #"http://172.18.140.79:8000/api/v1.0/put/pomodoro"
+    #"http://172.18.140.79:8000/api/v1.0/put/pomodoro"
     server_user = StringProperty("barbaros")
 
     server_send = BooleanProperty(False)
@@ -95,12 +95,59 @@ class Pomodoro(BoxLayout):
     def __init__(self, *args, **kwargs):
         super(Pomodoro, self).__init__(*args, **kwargs)
         self.buttons = get_buttons(self, [])
-        self.set_to_workstate()
         self.animation = None
         self.clock = SoundLoader.load('assets/clock.wav')
         self.alarm = SoundLoader.load('assets/alarm.wav')
+
+        try:
+            last_session = DB.store_get('last_session')
+        except ValueError:
+            last_session = ""
+        if last_session:
+            self.set_restart_session(last_session)
+        else:
+            self.set_to_workstate()
+
         if ACTIVE_STYLE == "style1":
             self.sm.current = 'start'
+
+    def set_restart_session(self, dct):
+        """
+        To restore previously stored, because of restart 
+        operation, data. Not to reach the same session 
+        after restoring operation the data must be deleted.
+        """
+        self.message.text = dct['message_text']
+        self.message.disabled = dct['message_disabled']
+        self.server_url = dct['server_url']
+        self.count_start = dct['count_start']
+        self.state = dct['state']
+        self.time_period = dct['time_period']
+        self.start = dct['start']
+        self.stop = dct['stop']
+
+        state = self.state
+        if self.state in ("paused", "work"):
+            self.set_to_workstate(period=self.time_period)
+        else:
+            self.set_to_breakstate(period=self.time_period)
+
+        if self.count_start:
+            if self.state == "break":
+                self.message.disabled = False
+                self.message.focus = True
+                if ACTIVE_STYLE == "style3":
+                    self.message.background_color = get_color_from_hex(
+                        "ffffff")
+            else:
+                self.start_animation()
+        else:
+            self.disable_buttons()
+        if state == "paused":
+            self.pause_but.disabled = True
+
+        DB.store_delete('last_session')
+        DB.store_sync()
 
     def disable_buttons(self):
         """
@@ -126,8 +173,14 @@ class Pomodoro(BoxLayout):
             self.pause_but.disabled = False
             self.state = "work"
             self.count_start = True
-
+        self.disable_buttons()
         self.stop = ""
+        if self.state == "break":
+            self.pause_but.disabled = True
+            self.pause_but.inactive = True
+            self.play_but.disabled = True
+            self.play_but.inactive = True
+
         if not self.server_send:
             self.send_data()
         Clock.schedule_once(lambda dt: self.decrease_minutes(), 1)
@@ -252,14 +305,14 @@ class Pomodoro(BoxLayout):
             self.perrotation = Vector(1, 1).angle(
                 Vector(1, 1).rotate(360 / float(self.time_period)))
 
-    def set_to_workstate(self):
+    def set_to_workstate(self, period=None):
         """
         the state of pomodoro taken to 'work' time periods and
         required settings handled. for per work pomodoro
         counter counts this state until break state triggered
         """
         self.state = "work"
-        self.time_period = WORK_TIME_PERIOD
+        self.time_period = WORK_TIME_PERIOD if period == None else period
         self.time_display = strftime('%M:%S', gmtime(self.time_period))
         self.time_minute, self.time_second = self.time_display.split(':')
         self.sprint_count += 1
@@ -267,13 +320,14 @@ class Pomodoro(BoxLayout):
         if ACTIVE_STYLE == "style1":
             self.switch_screen('start')
 
-    def set_to_breakstate(self):
+    def set_to_breakstate(self, period=None):
         """
         Break pomodoro action handled, the time calculated by
         the work state counter then it resets
         """
         self.state = "break"
-        self.time_period = BREAK_TIME_PERIOD * self.sprint_count
+        self.time_period = (
+            BREAK_TIME_PERIOD * self.sprint_count) if period == None else period
         self.sprint_count = 0
         self.time_display = strftime('%M:%S', gmtime(self.time_period))
         self.time_minute, self.time_second = self.time_display.split(':')
@@ -383,7 +437,7 @@ class Pomodoro(BoxLayout):
                          self.buttons)
         button = None
         if buttons and 149 > mouse_position[1] > 1 and \
-                       299 > mouse_position[0] > 1:
+                299 > mouse_position[0] > 1:
             button = buttons[0]
         for but in self.buttons:
             if but != button:
@@ -403,10 +457,32 @@ class Pomodoro(BoxLayout):
         DB.store_sync()
         Clock.schedule_once(lambda dt: self.restart(), .5)
 
+    def to_dict(self):
+        """
+        To store required data from restoring app and 
+        loosing all, values packed in a dict.
+        """
+        return {'state': self.state,
+                'count_start': self.count_start,
+                'server_url': self.server_url,
+                'server_user': self.server_user,
+                'message_text': self.message.text,
+                'message_disabled': self.message.disabled,
+                'time_period': self.time_period,
+                'start': self.start,
+                'stop': self.stop}
+
     def restart(self):
+        """
+        Restoring current values to specified file on 
+        config.py and restart operation of app handled.
+        """
+        DB.store_put('last_session', self.to_dict())
+        DB.store_sync()
         args = sys.argv[:]
         args.insert(0, sys.executable)
         os.execv(sys.executable, args)
+
 
 class PomodoroApp(App):
 
