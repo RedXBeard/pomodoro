@@ -13,6 +13,7 @@ Linux Installation
 Until <code>.sh</code> file, the way as following
 ```python
 pip install Cython
+pip install requests
 pip install git+https://github.com/RedXBeard/kivy.git@red
 git clone https://github.com/RedXBeard/pomodoro.git
 ```
@@ -20,15 +21,19 @@ To run the app; this could also been kept and
 ```python
 python path/to/cloned/repo/pomodoro/pomodoro.py
 ```
+On Linux you can make your own launcher also which will be more fun.
 
 Windows Installation
 --------------------
 There will be <code>.zip</code> link soon.
 
+Complete
+--------
+- Settings menu added.
+- theme selectable and auto relaunch added.
 
 TO-DO's
 -------
-- There should be menu screen.
-- Theme selectable.
 - Log display.
 - Log export (<code>.csv</code>).
+
