@@ -6,7 +6,7 @@ This GUI interfaced pomodoro does the same thing with the pomodoro timer, and al
 
 MAC Installation
 ----------------
-To download <code>.dmg</code>, please; https://app.box.com/s/zlsgpn9qvivkimr3b75a.
+To download <code>.dmg</code>, please; https://app.box.com/s/zlsgpn9qvivkimr3b75a 
 
 Linux Installation
 ------------------
@@ -25,7 +25,7 @@ On Linux you can make your own launcher also which will be more fun.
 
 Windows Installation
 --------------------
-There will be <code>.zip</code> link soon.
+To download <code>.zip</code>, please; https://app.box.com/s/knadkncl7tuzwnphdeo5 
 
 Complete
 --------
@@ -37,4 +37,3 @@ TO-DO's
 - Work - Break - Pause states can be display on a server, connection handling.
 - Log display.
 - Log export (<code>.csv</code>).
-
