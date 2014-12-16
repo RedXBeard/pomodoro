@@ -34,6 +34,7 @@ Complete
 
 TO-DO's
 -------
+- Work - Break - Pause states can be display on a server, connection handling.
 - Log display.
 - Log export (<code>.csv</code>).
 
