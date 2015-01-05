@@ -113,8 +113,8 @@ class Pomodoro(BoxLayout):
 
     def set_restart_session(self, dct):
         """
-        To restore previously stored, because of restart 
-        operation, data. Not to reach the same session 
+        To restore previously stored, because of restart
+        operation, data. Not to reach the same session
         after restoring operation the data must be deleted.
         """
         self.message.text = dct['message_text']
@@ -459,7 +459,7 @@ class Pomodoro(BoxLayout):
 
     def to_dict(self):
         """
-        To store required data from restoring app and 
+        To store required data from restoring app and
         loosing all, values packed in a dict.
         """
         return {'state': self.state,
@@ -474,7 +474,7 @@ class Pomodoro(BoxLayout):
 
     def restart(self):
         """
-        Restoring current values to specified file on 
+        Restoring current values to specified file on
         config.py and restart operation of app handled.
         """
         DB.store_put('last_session', self.to_dict())
