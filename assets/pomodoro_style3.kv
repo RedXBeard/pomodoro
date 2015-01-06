@@ -54,6 +54,7 @@
                 font_name: default_book_font_name
                 on_press: print root.index
                 shorten: False
+                ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
             Button:
                 id: log_detail_but
                 text: "[color=141718]: %s[/color]"%root.log
@@ -62,6 +63,7 @@
                 background_color: get_color_from_hex('ECEFF1')
                 font_name: default_book_font_name
                 on_press: print root.index
+                ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
         Label:
             canvas:
                 Color:
@@ -103,7 +105,7 @@
             			id: log_but
                         size_hint: None, None
                         size: 30, 30
-                        has_hover: False
+                        has_hover: True
                         name: "minimize"
                         ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
                         on_press: root.load_logs();root.switch_screen('log_screen', side='right')
@@ -302,6 +304,8 @@
                 	size: 30, 20
                 	pos: 75, 40
                 	on_press: root.change_theme()
+                	has_hover: False
+                	name: "theme"
 					Image:
 						id: toggle_source
                     	source: "assets/icons/switches_to_light.png"
@@ -321,6 +325,16 @@
             name: "log_screen"
 
             FloatLayout:
+
+                Label:
+                    size_hint: None, None
+                    size: 21, 25
+                    pos: 12, 115
+                    text: "[color=eceff1]Logs[/color]"
+                    font_size: 13
+                    font_name: default_book_font_name
+                    markup: True
+
                 Button:
                     size_hint: None, None
                     size: 54, 21
@@ -329,6 +343,7 @@
                     has_hover: False
                     inactive: False
                     padding_x: '10'
+                    name: "log done"
         			Image:
         				source: "assets/icons/done_dark.png"
 

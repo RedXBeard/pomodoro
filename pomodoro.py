@@ -30,7 +30,9 @@ def get_buttons(obj, buttons=[]):
     with buttons extra attribute called 'has_hover'
     """
     for ch in obj.children:
-        if hasattr(ch, 'has_hover'):
+        if hasattr(ch, 'has_hover') and \
+                hasattr(ch, 'ranged') and \
+                ch.has_hover:
             buttons.append(ch)
         get_buttons(ch, buttons)
     return buttons
@@ -48,9 +50,6 @@ class LogItem(BoxLayout):
 
     def __del__(self, *args, **kwargs):
         pass
-
-class LogButton(Button):
-    pass
 
 
 class MyScatterLayout(ScatterLayout):
@@ -350,6 +349,7 @@ class Pomodoro(BoxLayout):
             direction = side
         self.sm.transition = SlideTransition(direction=direction)
         self.sm.current = screen
+        self.buttons = get_buttons(self, [])
 
     def set_clock(self):
         """
@@ -541,11 +541,12 @@ class Pomodoro(BoxLayout):
         os.execv(sys.executable, args)
 
     def log_converter(self, row_index, item):
-        return {
+        data = {
             'log': item['content'],
             'date': str(item['date_from']),
             'index': item['index']
         }
+        return data
 
 
 class PomodoroApp(App):

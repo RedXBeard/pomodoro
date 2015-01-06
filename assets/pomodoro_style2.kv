@@ -54,6 +54,8 @@
                 font_name: default_book_font_name
                 on_press: print root.index
                 shorten: False
+                ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
+                name: "log_date"
             Button:
                 id: log_detail_but
                 text: "[color=141718]: %s[/color]"%root.log
@@ -62,6 +64,8 @@
                 background_color: get_color_from_hex('ECEFF1')
                 font_name: default_book_font_name
                 on_press: print root.index
+                ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
+                name: "log_log"
         Label:
             canvas:
                 Color:
@@ -102,8 +106,8 @@
             			id: log_but
                         size_hint: None, None
                         size: 30, 30
-                        has_hover: False
-                        name: "minimize"
+                        has_hover: True
+                        name: "logs"
                         ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
                         on_press: root.load_logs();root.switch_screen('log_screen', side='right')
             			Image:
@@ -222,6 +226,7 @@
                     pos: 235, 115
                     has_hover: False
                     inactive: False
+                    name: "settings done"
         			Image:
         				source: "assets/icons/done_light.png"
 
@@ -301,6 +306,8 @@
                 	size: 30, 20
                 	pos: 75, 40
                 	on_press: root.change_theme()
+                	has_hover: False
+                	name: "theme"
 					Image:
 						id: toggle_source
                     	source: "assets/icons/switches_to_dark.png"
@@ -315,12 +322,21 @@
                     text_size: self.width, self.height
                     halign: 'right'
                     markup: True
-
         Screen:
             id: log_screen
             name: "log_screen"
 
             FloatLayout:
+
+                Label:
+                    size_hint: None, None
+                    size: 21, 25
+                    pos: 12, 115
+                    text: "[color=455A64]Logs[/color]"
+                    font_size: 13
+                    font_name: default_book_font_name
+                    markup: True
+
                 Button:
                     size_hint: None, None
                     size: 54, 21
@@ -329,6 +345,7 @@
                     has_hover: False
                     inactive: False
                     padding_x: '10'
+                    name: "log done"
         			Image:
         				source: "assets/icons/done_light.png"
 
