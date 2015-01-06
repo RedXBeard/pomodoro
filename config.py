@@ -50,8 +50,8 @@ DB.store_sync()
 
 ACTIVE_STYLE = DB.store_get("theme")
 
-WORK_TIME_PERIOD = 1500
-BREAK_TIME_PERIOD = 300
+WORK_TIME_PERIOD = 15
+BREAK_TIME_PERIOD = 3
 
 KIVY_FONTS = [{
     "name": "WebAwesome",
@@ -96,3 +96,5 @@ KIVY_ICONIC_FONT_PATH = filter(
 COLOR1 = get_color_from_hex('E62E25')
 COLOR_RED = (1, .85, .85, 1)
 COLOR_GREEN = get_color_from_hex('66BB6A')
+BACKGROUND_COLOR3 = get_color_from_hex("141718")
+BACKGROUND_COLOR2 = (.98, .98, .98, 1)

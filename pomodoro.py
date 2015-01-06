@@ -16,8 +16,10 @@ from kivy.uix.screenmanager import SlideTransition
 from kivy.utils import get_color_from_hex
 from time import strftime, gmtime
 from kivy.uix.scatter import Scatter
+from kivy.uix.button import Button
 from datetime import datetime
 from requests import get as REQ_GET
+from copy import copy
 from config import *
 
 
@@ -32,6 +34,23 @@ def get_buttons(obj, buttons=[]):
             buttons.append(ch)
         get_buttons(ch, buttons)
     return buttons
+
+
+class LogItem(BoxLayout):
+
+    """
+    BranchesItem; on branches screen, on other branches list,
+        each element is using this class to display.
+    """
+    date = StringProperty("")
+    log = StringProperty("")
+    index = NumericProperty()
+
+    def __del__(self, *args, **kwargs):
+        pass
+
+class LogButton(Button):
+    pass
 
 
 class MyScatterLayout(ScatterLayout):
@@ -82,6 +101,8 @@ class Pomodoro(BoxLayout):
     start = StringProperty()
     stop = StringProperty()
 
+    logs = ListProperty([])
+
     server_url = StringProperty()
     #"http://172.18.140.79:8000/api/v1.0/put/pomodoro"
     server_user = StringProperty("barbaros")
@@ -98,7 +119,7 @@ class Pomodoro(BoxLayout):
         self.animation = None
         self.clock = SoundLoader.load('assets/clock.wav')
         self.alarm = SoundLoader.load('assets/alarm.wav')
-
+        #self.load_logs()
         try:
             last_session = DB.store_get('last_session')
         except KeyError:
@@ -110,6 +131,38 @@ class Pomodoro(BoxLayout):
 
         if ACTIVE_STYLE == "style1":
             self.sm.current = 'start'
+
+
+    def db_check(self):
+        keys = DB.keys()
+        for k in keys:
+            value = DB.store_get(k)
+            if type(value) == list:
+                for v in value:
+                    if type(v) == dict:
+                        if 'date_from' in v:
+                            v['date_from'] = str(v['date_from'])
+                        if 'date_to' in v:
+                            v['date_to'] = str(v['date_to'])
+
+    def load_logs(self):
+        logs = []
+        days = filter(lambda x: len(x.split("-"))==3, DB.keys())
+        for day in days:
+            data = DB.store_get(day)
+            self.db_check()
+            DB.store_sync()
+            for log in data:
+                if type(log['date_from']) != datetime:
+                    log['date_from'] = datetime.strptime(log['date_from'], "%Y-%m-%d %H:%M:%S")
+                if type(log['date_to']) != datetime:
+                    log['date_to'] = datetime.strptime(log['date_to'], "%Y-%m-%d %H:%M:%S")
+            logs.extend(data)
+        logs.sort(key=lambda x: x['date_from'], reverse=True)
+        counter = 0
+        for log in logs:
+            log['index'] = logs.index(log)
+        self.logs = logs
 
     def set_restart_session(self, dct):
         """
@@ -147,6 +200,7 @@ class Pomodoro(BoxLayout):
             self.pause_but.disabled = True
 
         DB.store_delete('last_session')
+        self.db_check()
         DB.store_sync()
 
     def disable_buttons(self):
@@ -409,6 +463,7 @@ class Pomodoro(BoxLayout):
                 existing_data = []
             existing_data.append(data)
             DB.store_put(current_day, existing_data)
+            self.db_check()
             DB.store_sync()
             if ACTIVE_STYLE == "style1":
                 self.switch_screen('action')
@@ -454,6 +509,7 @@ class Pomodoro(BoxLayout):
             theme = 'style3'
             self.toggle_source.source = "assets/icons/switches_to_light.png"
         DB.store_put('theme', theme)
+        self.db_check()
         DB.store_sync()
         Clock.schedule_once(lambda dt: self.restart(), .5)
 
@@ -469,8 +525,8 @@ class Pomodoro(BoxLayout):
                 'message_text': self.message.text,
                 'message_disabled': self.message.disabled,
                 'time_period': self.time_period,
-                'start': self.start,
-                'stop': self.stop}
+                'start': str(self.start),
+                'stop': str(self.stop)}
 
     def restart(self):
         """
@@ -478,10 +534,18 @@ class Pomodoro(BoxLayout):
         config.py and restart operation of app handled.
         """
         DB.store_put('last_session', self.to_dict())
+        self.db_check()
         DB.store_sync()
         args = sys.argv[:]
         args.insert(0, sys.executable)
         os.execv(sys.executable, args)
+
+    def log_converter(self, row_index, item):
+        return {
+            'log': item['content'],
+            'date': str(item['date_from']),
+            'index': item['index']
+        }
 
 
 class PomodoroApp(App):
