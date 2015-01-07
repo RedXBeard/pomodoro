@@ -52,6 +52,10 @@ class LogItem(BoxLayout):
     def __del__(self, *args, **kwargs):
         pass
 
+    def show_log(self, index):
+        pomodoro = self.parent.parent.parent.parent.parent.parent.parent.parent
+        pomodoro.show_log(index)
+
 class CustomSpinner(Spinner):
 
     """
@@ -150,6 +154,15 @@ class Pomodoro(BoxLayout):
         if ACTIVE_STYLE == "style1":
             self.sm.current = 'start'
 
+    def show_log(self, index):
+        data = self.logs[index]
+        self.switch_screen('logdetail_screen', side='down')
+        floatlayout = self.sm.current_screen.children[0]
+        floatlayout.log_detail.text = data['content']
+        floatlayout.date_distance.text = "[color=%s]%s - %s[/color]"%(
+                                        floatlayout.date_distance.color_data,
+                                        data['date_from'].split(' ')[1],
+                                        data['date_to'].split(' ')[1])
 
     def db_check(self):
         keys = DB.keys()
@@ -511,19 +524,24 @@ class Pomodoro(BoxLayout):
         hover action handling, for capable buttons.
         """
         mouse_position = args[1]
-        buttons = filter(lambda x:
-                         x.pos[0] <= mouse_position[0] <= x.ranged[0] and
-                         x.pos[1] <= mouse_position[1] <= x.ranged[1],
-                         self.buttons)
-        button = None
-        if buttons and 149 > mouse_position[1] > 1 and \
-                299 > mouse_position[0] > 1:
-            button = buttons[0]
-        for but in self.buttons:
-            if but != button:
-                but.inactive = True
-            else:
-                but.inactive = False
+
+        if self.sm.current == 'log_screen':
+            #items = self.sm.children[0].children[0].logs.children[0].children[0].children
+            pass
+        else:
+            buttons = filter(lambda x:
+                             x.pos[0] <= mouse_position[0] <= x.ranged[0] and
+                             x.pos[1] <= mouse_position[1] <= x.ranged[1],
+                             self.buttons)
+            button = None
+            if buttons and 149 > mouse_position[1] > 1 and \
+                    299 > mouse_position[0] > 1:
+                button = buttons[0]
+            for but in self.buttons:
+                if but != button:
+                    but.inactive = True
+                else:
+                    but.inactive = False
 
     def change_theme(self):
         theme = DB.store_get("theme")

@@ -44,7 +44,7 @@
         BoxLayout:
             Button:
                 size_hint_x: None
-                width: '100dp'
+                width: '40dp'
                 id: log_detail_but
                 text: "[color=141718]%s[/color]"%(root.date)
                 font_size: 10
@@ -52,7 +52,7 @@
                 padding_x: '-3dp' if KIVY_VERSION == '1.8.0' else '3dp'
                 background_color: get_color_from_hex('ECEFF1')
                 font_name: default_book_font_name
-                on_press: print root.index
+                on_press: root.show_log(root.index)
                 shorten: False
                 ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
             Button:
@@ -62,7 +62,7 @@
                 text_size: self.width, None
                 background_color: get_color_from_hex('ECEFF1')
                 font_name: default_book_font_name
-                on_press: print root.index
+                on_press: root.show_log(root.index)
                 ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
         Label:
             canvas:
@@ -337,7 +337,6 @@
             name: "log_screen"
 
             FloatLayout:
-
                 Label:
                     size_hint: None, None
                     size: 20, 25
@@ -381,3 +380,62 @@
                     pos: 10, 10
                     ListView:
                         adapter: ListAdapter(data=root.logs, cls=Factory.LogItem, args_converter=root.log_converter)
+
+        Screen:
+            id: logdetail_screen
+            name: "logdetail_screen"
+
+            FloatLayout:
+                log_detail: log_detail
+                date_distance: date_distance
+                Button:
+                    size_hint: None, None
+                    size: 54, 21
+                    on_press: root.switch_screen('log_screen', side='up')
+                    pos: 10, 115
+                    has_hover: False
+                    inactive: False
+                    padding_x: '-10' if KIVY_VERSION == '1.8.0' else '10'
+                    name: "log done"
+        			Image:
+        				source: "assets/icons/done_dark.png"
+                Button:
+                    size_hint: None, None
+                    text: '[color=141718]Back[/color]'
+                    size: 33, 18
+                    on_press: root.switch_screen('log_screen', side='up')
+                    pos: 29, 117
+                    has_hover: False
+                    font_name: default_book_font_name
+                    font_size: 12
+                    inactive: False
+                    padding_x: '-10' if KIVY_VERSION == '1.8.0' else '10'
+                    name: "log done"
+                    background_color: .98, .98, .98, 1
+
+                Label:
+                    id: date_distance
+                    size_hint: None, None
+                    size: 20, 25
+                    pos: 164, 115
+                    color_data: '141718'
+                    font_size: 13
+                    font_name: default_book_font_name
+                    markup: True
+
+                TextInput:
+        			id: log_detail
+        			size_hint: None, None
+        			size: 280, 100
+        			pos: 10, 10
+        			font_size: 12
+        			multiline: True
+        			font_name: default_book_font_name
+        			background_color: get_color_from_hex('ECEFF1')
+        			readonly: True
+        			markup: True
+        			cursor: False
+        			background_disabled_active: ""
+        			background_disabled_normal: ""
+        			background_normal: ""
+        			background_active: ""
