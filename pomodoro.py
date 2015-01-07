@@ -16,6 +16,7 @@ from kivy.uix.screenmanager import SlideTransition
 from kivy.utils import get_color_from_hex
 from time import strftime, gmtime
 from kivy.uix.scatter import Scatter
+from kivy.uix.spinner import Spinner
 from kivy.uix.button import Button
 from datetime import datetime
 from requests import get as REQ_GET
@@ -51,6 +52,23 @@ class LogItem(BoxLayout):
     def __del__(self, *args, **kwargs):
         pass
 
+class CustomSpinner(Spinner):
+
+    """
+    Base Spinner class has _on_dropdown_select method which holds
+    only change the text attribute of class which is not enough.
+
+    CustomSpinner used to display local branch list so any changes
+    of this is actually means changing current branch.
+    """
+
+    def __del__(self, *args, **kwargs):
+        pass
+
+    def _on_dropdown_select(self, instance, data, *largs):
+        self.text = "[color=%s]%s[/color]"%(self.color_data, data)
+        pomodoro = self.parent.parent.parent.parent
+        pomodoro.load_logs(date = data)
 
 class MyScatterLayout(ScatterLayout):
 
@@ -118,6 +136,7 @@ class Pomodoro(BoxLayout):
         self.animation = None
         self.clock = SoundLoader.load('assets/clock.wav')
         self.alarm = SoundLoader.load('assets/alarm.wav')
+        self.load_log_dates()
         #self.load_logs()
         try:
             last_session = DB.store_get('last_session')
@@ -144,24 +163,29 @@ class Pomodoro(BoxLayout):
                         if 'date_to' in v:
                             v['date_to'] = str(v['date_to'])
 
-    def load_logs(self):
+    def load_log_dates(self):
+        days = list(set(filter(lambda x: len(x.split("-"))==3, DB.keys())))
+        self.log_spinner.values = days
+
+    def load_logs(self, date=""):
         logs = []
         days = filter(lambda x: len(x.split("-"))==3, DB.keys())
         for day in days:
             data = DB.store_get(day)
-            self.db_check()
             DB.store_sync()
             for log in data:
                 if type(log['date_from']) != datetime:
                     log['date_from'] = datetime.strptime(log['date_from'], "%Y-%m-%d %H:%M:%S")
                 if type(log['date_to']) != datetime:
                     log['date_to'] = datetime.strptime(log['date_to'], "%Y-%m-%d %H:%M:%S")
-            logs.extend(data)
+            if day == date:
+                logs.extend(data)
         logs.sort(key=lambda x: x['date_from'], reverse=True)
         counter = 0
         for log in logs:
             log['index'] = logs.index(log)
         self.logs = logs
+        self.db_check()
 
     def set_restart_session(self, dct):
         """
@@ -464,6 +488,7 @@ class Pomodoro(BoxLayout):
             existing_data.append(data)
             DB.store_put(current_day, existing_data)
             self.db_check()
+            self.load_log_dates()
             DB.store_sync()
             if ACTIVE_STYLE == "style1":
                 self.switch_screen('action')
@@ -543,7 +568,7 @@ class Pomodoro(BoxLayout):
     def log_converter(self, row_index, item):
         data = {
             'log': item['content'],
-            'date': str(item['date_from']),
+            'date': str(item['date_from'].split(" ")[1].strip()),
             'index': item['index']
         }
         return data

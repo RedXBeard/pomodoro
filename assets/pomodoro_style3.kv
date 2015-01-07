@@ -44,7 +44,7 @@
         BoxLayout:
             Button:
                 size_hint_x: None
-                width: '100dp'
+                width: '40dp'
                 id: log_detail_but
                 text: "[color=141718]%s[/color]"%(root.date)
                 font_size: 10
@@ -74,6 +74,16 @@
             size_hint_y: None
             height: '1dp'
 
+<CustomSpinnerOption@SpinnerOption>:
+    background_color: get_color_from_hex('ECEFF1')
+    color: get_color_from_hex('141718')
+    size_hint: None, None
+    size: 190, 20
+    font_size: 12
+    font_name: default_font_name
+    text_size: self.width, None
+    padding_x: '-3dp' if KIVY_VERSION == '1.8.0' else '3dp'
+
 <Pomodoro>
 	orientation: 'vertical'
 
@@ -84,6 +94,7 @@
 	stop_but: stop_but
 	message: message
 	toggle_source: toggle_source
+	log_spinner: log_spinner
     sm: sm
 
     ScreenManager:
@@ -106,9 +117,9 @@
                         size_hint: None, None
                         size: 30, 30
                         has_hover: True
-                        name: "minimize"
+                        name: "logs"
                         ranged: (self.pos[0]+self.width, self.pos[1]+self.height)
-                        on_press: root.load_logs();root.switch_screen('log_screen', side='right')
+                        on_press: root.switch_screen('log_screen', side='right')
             			Image:
     	        		    inactive: "assets/icons/log_hover.png"
             				source: "assets/icons/log.png" if self.parent.inactive else "assets/icons/log_hover.png"
@@ -328,12 +339,28 @@
 
                 Label:
                     size_hint: None, None
-                    size: 21, 25
+                    size: 20, 25
                     pos: 12, 115
-                    text: "[color=eceff1]Logs[/color]"
+                    text: "[color=eceff1]Logs:[/color]"
                     font_size: 13
                     font_name: default_book_font_name
                     markup: True
+
+                CustomSpinner:
+                    id: log_spinner
+                    size_hint: None, None
+                    pos: 40, 115
+                    size: 190, 20
+                    text: "[color=ADB2B3]Select date[/color]"
+                    color_data: 141718
+                    text_size: self.width, None
+                    padding_x: '-3dp' if KIVY_VERSION == '1.8.0' else '3dp'
+                    values: ['test','test2','test3']
+                    font_name: default_font_name
+                    font_size: 12
+                    background_color: get_color_from_hex('ECEFF1')
+                    has_hover: False
+                    option_cls: Factory.get("CustomSpinnerOption")
 
                 Button:
                     size_hint: None, None
@@ -342,7 +369,7 @@
                     pos: 235, 115
                     has_hover: False
                     inactive: False
-                    padding_x: '10'
+                    padding_x: '-10' if KIVY_VERSION == '1.8.0' else '10'
                     name: "log done"
         			Image:
         				source: "assets/icons/done_dark.png"
