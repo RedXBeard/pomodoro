@@ -43,7 +43,7 @@ class LogItem(BoxLayout):
 
     """
     BranchesItem; on branches screen, on other branches list,
-        each element is using this class to display.
+    each element is using this class to display.
     """
     date = StringProperty("")
     log = StringProperty("")
@@ -62,8 +62,7 @@ class CustomSpinner(Spinner):
     Base Spinner class has _on_dropdown_select method which holds
     only change the text attribute of class which is not enough.
 
-    CustomSpinner used to display local branch list so any changes
-    of this is actually means changing current branch.
+    CustomSpinner used to display log dates only.
     """
 
     def __del__(self, *args, **kwargs):
@@ -155,6 +154,10 @@ class Pomodoro(BoxLayout):
             self.sm.current = 'start'
 
     def show_log(self, index):
+        """
+        show_log, to display specified log with more
+        information and full log content.
+        """
         data = self.logs[index]
         self.switch_screen('logdetail_screen', side='down')
         floatlayout = self.sm.current_screen.children[0]
@@ -165,6 +168,10 @@ class Pomodoro(BoxLayout):
                                         data['date_to'].split(' ')[1])
 
     def db_check(self):
+        """
+        db_check, json data can be damaged as objects on it
+        to make it back to json serializable dict function called.
+        """
         keys = DB.keys()
         for k in keys:
             value = DB.store_get(k)
@@ -177,10 +184,19 @@ class Pomodoro(BoxLayout):
                             v['date_to'] = str(v['date_to'])
 
     def load_log_dates(self):
+        """
+        load_log_dates, is for picking log days only and
+        serving as sorted reversely.
+        """
         days = list(set(filter(lambda x: len(x.split("-"))==3, DB.keys())))
+        days.sort(reverse=True)
         self.log_spinner.values = days
 
     def load_logs(self, date=""):
+        """
+        load_logs, according to the given date required
+        data set is taken and serves to app.
+        """
         logs = []
         days = filter(lambda x: len(x.split("-"))==3, DB.keys())
         for day in days:
@@ -188,9 +204,11 @@ class Pomodoro(BoxLayout):
             DB.store_sync()
             for log in data:
                 if type(log['date_from']) != datetime:
-                    log['date_from'] = datetime.strptime(log['date_from'], "%Y-%m-%d %H:%M:%S")
+                    log['date_from'] = datetime.strptime(log['date_from'],
+                                                "%Y-%m-%d %H:%M:%S")
                 if type(log['date_to']) != datetime:
-                    log['date_to'] = datetime.strptime(log['date_to'], "%Y-%m-%d %H:%M:%S")
+                    log['date_to'] = datetime.strptime(log['date_to'],
+                                                "%Y-%m-%d %H:%M:%S")
             if day == date:
                 logs.extend(data)
         logs.sort(key=lambda x: x['date_from'], reverse=True)
