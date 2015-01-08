@@ -31,9 +31,9 @@ Complete
 --------
 - Settings menu added.
 - theme selectable and auto relaunch added.
+- Log display.
 
 TO-DO's
 -------
 - Work - Break - Pause states can be display on a server, connection handling.
-- Log display.
 - Log export (<code>.csv</code>).
