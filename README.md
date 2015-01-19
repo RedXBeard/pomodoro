@@ -12,8 +12,9 @@ Linux Installation
 ------------------
 Until <code>.sh</code> file, the way as following
 ```python
-pip install Cython
-pip install requests
+pip install -U numpy
+pip install -U cython
+pip install -U requests
 pip install git+https://github.com/RedXBeard/kivy.git@red
 git clone https://github.com/RedXBeard/pomodoro.git
 ```
